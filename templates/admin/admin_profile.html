@@ -1,0 +1,73 @@
+<div class="container-fluid mt-5">
+  <div class="card shadow-lg border-0 rounded-4 mx-auto" style="max-width: 800px; background-color: #2e2e3e; color: #f8f9fa;">
+    <div class="card-body p-5">
+      <h2 class="text-center mb-4 fw-bold text-success">👤 {{ user.username or "Admin Profile" }}</h2>
+
+      <form id="profile-form" enctype="multipart/form-data">
+        <!-- Profile Image -->
+        <div class="mb-4 text-center">
+          <img id="preview-img" src="{{ user.profile_img or '/static/default.jpg' }}" 
+               class="rounded-circle shadow-sm border border-light" 
+               alt="Profile" width="130" height="130" style="object-fit: cover;">
+          <input type="file" name="profile_img" class="form-control mt-3 bg-dark text-light w-50 mx-auto" onchange="previewImage(this)">
+        </div>
+
+        <!-- Username & Email (Row) -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control bg-dark text-light" value="{{ user.username or '' }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control bg-dark text-light" value="{{ user.email or '' }}" required>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="mb-4">
+          <label class="form-label">Bio</label>
+          <textarea name="bio" class="form-control bg-dark text-light" rows="4" placeholder="Write something about yourself...">{{ user.bio or '' }}</textarea>
+        </div>
+
+        <!-- Button -->
+        <div class="text-center">
+          <button type="submit" class="btn btn-success px-5 py-2 fs-6 shadow">
+            <i class="fas fa-save me-2"></i>{{ 'Update Profile' if user.username else 'Create Profile' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function previewImage(input) {
+  const file = input.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById('preview-img').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+document.getElementById("profile-form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  fetch('/admin/profile/update', {
+    method: 'POST',
+    body: formData
+  }).then(res => res.json()).then(data => {
+    if(data.status === 'success'){
+      alert('✅ Profile updated!');
+      loadPage('/admin/profile');
+    } else {
+      alert('❌ Failed to save profile.');
+    }
+  });
+});
+</script>

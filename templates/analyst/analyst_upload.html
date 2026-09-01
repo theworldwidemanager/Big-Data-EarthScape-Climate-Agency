@@ -1,0 +1,147 @@
+<!-- 📤 Upload Form -->
+<div class="card p-4">
+  <h4 class="mb-3"><i class="fas fa-upload"></i> Step 1: Upload Your Climate Dataset (.csv or .json)</h4>
+  <p class="text-white">Please upload a file containing temperature, humidity, rainfall, and wind speed data.</p>
+
+  <form id="uploadForm">
+    <div class="mb-3">
+      <input type="file" name="file" class="form-control bg-dark text-light" accept=".csv,.json" required />
+    </div>
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-cloud-upload-alt"></i> Upload Data File
+    </button>
+    <p class="text-danger mt-2">Supported formats: CSV, JSON. Ensure your file contains the required fields.</p>
+    <p class="text-white">Example CSV format:</p>
+    <pre class="bg-dark text-light p-2">
+temperature,humidity,rainfall,wind_speed
+20.5,65,0.0,5.2
+22.1,70,0.5,4.8
+24.3,75,1.2,6.0
+    </pre>
+  </form>
+
+  <div class="alert alert-warning mt-4" id="uploadReminder">
+    ℹ️ Please upload your climate data file first to enable prediction.
+  </div>
+
+  <div id="uploadStatus" class="mt-4"></div>
+  <div id="errorList" class="text-warning mt-2"></div>
+</div>
+
+<!-- 🤖 Prediction Form (Initially Hidden) -->
+<div id="predictionForm" class="card p-4 mt-4 d-none">
+  <h4 class="mb-3"><i class="fas fa-robot"></i> Step 2: Predict Any Climate Attribute</h4>
+  <p class="text-white">Choose a target to predict using machine learning models. Enter known values and leave the
+    target field blank.</p>
+
+  <form id="predictModelForm">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label>Target to Predict</label>
+        <select name="target" class="form-select bg-dark text-light">
+          <option value="humidity">Humidity</option>
+          <option value="rainfall">Rainfall</option>
+          <option value="temperature">Temperature</option>
+        </select>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label>Choose ML Model</label>
+        <select name="ml_model" class="form-select bg-dark text-light">
+          <option value="decision_tree">Decision Tree</option>
+          <option value="linear_regression">Linear Regression</option>
+          <option value="svr">Support Vector Regression (SVR)</option>
+          <option value="polynomial">Polynomial Regression</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 text-light"><label>Temperature(°C)</label><input name="temp_input"
+          placeholder="Temperature(centigrade) e.g. 28" class="form-control bg-dark text-light mb-3" /></div>
+      <div class="col-md-3"><label>Humidity(%)</label><input name="humidity_input" placeholder="Humidity(%) e.g. 65"
+          class="form-control bg-dark text-light mb-3" /></div>
+      <div class="col-md-3"><label>Rainfall(mm)</label><input name="rainfall_input" placeholder="Rainfall(mm) e.g. 15.2"
+          class="form-control bg-dark text-light mb-3" /></div>
+      <div class="col-md-3"><label>Windspeed(km/h)</label><input name="wind_speed_input"
+          placeholder="Wind Speed e.g. 10.5" class="form-control bg-dark text-light mb-3" /></div>
+    </div>
+    <button class="btn btn-success mt-2">
+      <i class="fas fa-magic"></i> Generate Prediction
+    </button>
+
+  </form>
+  <div id="predictOutput" class="mt-3"></div>
+</div>
+<script>
+  $('#uploadForm').on('submit', function (e) {
+    e.preventDefault();
+    $('button[type="submit"]').prop('disabled', true); // Disable button on submit
+    const formData = new FormData(this);
+    $('#uploadStatus').html('⏳ Uploading...');
+    $('#errorList').html('');
+    $('#predictionForm').addClass('d-none'); // hide initially
+
+    fetch('/analyst/upload', {
+      method: 'POST',
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log("Upload response:", data); // optional: debugging
+        if (data.success) {
+          $('#uploadStatus').html(`
+          <div class="alert alert-success">
+            ✅ File uploaded successfully!<br>
+            ✔️ ${data.inserted} new records added<br>
+            ⚠️ ${data.skipped} duplicates skipped.
+          </div>
+        `);
+
+          if (data.errors?.length) {
+            $('#errorList').html('<strong>Issues:</strong><ul>' + data.errors.map(e => `<li>${e}</li>`).join('') + '</ul>');
+          }
+
+          $('#uploadReminder').hide();
+
+          // ✅ Show prediction form
+          $('#predictionForm').removeClass('d-none');
+          // ✅ Smooth scroll to prediction form
+          document.getElementById("predictionForm").scrollIntoView({ behavior: 'smooth' });
+        } else {
+          $('#uploadStatus').html(`<div class="alert alert-danger">❌ ${data.message}</div>`);
+        }
+         $('button[type="submit"]').prop('disabled', false); // 🔓 Re-enable on success
+      })
+      .catch(() => {
+        $('#uploadStatus').html('<div class="alert alert-danger">❌ Server error. Please try again.</div>');
+         $('button[type="submit"]').prop('disabled', false); // 🔓 Re-enable on error
+      });
+  });
+
+  // 📊 Handle Prediction Submit
+  $('#predictModelForm').on('submit', function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch('/analyst/train-model', {
+      method: 'POST',
+      body: formData
+    }).then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          $('#predictOutput').html(`<div class="alert alert-info">📊 Predicted ${data.target}: <strong>${data.value}</strong></div>`);
+        } else {
+          $('#predictOutput').html(`<div class="alert alert-danger">❌ ${data.error}</div>`);
+        }
+      });
+  });
+  function showToast(message, type = "info") {
+    Toastify({
+      text: message,
+      duration: 4000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      backgroundColor: type === 'alert' ? "#f44336" : "#2196F3"
+    }).showToast();
+  }
+</script>

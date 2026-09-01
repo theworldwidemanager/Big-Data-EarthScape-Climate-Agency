@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Analyst Dashboard | EarthScape</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+      margin: 0;
+      display: flex;
+    }
+
+   
+    .main {
+     margin-left: 90px;
+      padding: 30px;
+      width: 100%;
+    }
+
+    .card {
+      background: #2b2b3c;
+      border: none;
+      color: white;
+      border-left: 6px solid #10b981;
+      border-radius: 10px;
+    }
+
+    .card h6 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
+    }
+
+    .user-msg {
+      background-color: #198754;
+      /* Bootstrap success */
+      color: white;
+      padding: 8px 12px;
+      border-radius: 15px 15px 0 15px;
+      margin: 6px 0;
+      max-width: 75%;
+      margin-left: auto;
+      text-align: right;
+      display: inline-block;
+    }
+
+    .bot-msg {
+      background-color: #444;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 15px 15px 15px 0;
+      margin: 6px 0;
+      max-width: 75%;
+      margin-right: auto;
+      text-align: left;
+      display: inline-block;
+    }
+
+    #chatbotMessages>div {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+
+
+  <!-- Main Content -->
+  <div class="main mt-4">
+    <div class="main-content-wrapper">
+      <div class="admin-header d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex align-items-center gap-3">
+          <img src="{{ user.profile_img or '/static/default.jpg' }}" class="rounded-circle border" width="40"
+            height="40" style="object-fit: cover;">
+          <h5 class="mb-0">👋 Welcome back, {{ user.username or 'Analyst' }}!</h5>
+        </div>
+        <div class="text-end">
+          <i class="fas fa-circle-user me-1"></i> {{ user.email }}
+          <span class="badge bg-success ms-2">{{ user.role or "Analyst" }}</span>
+        </div>
+      </div>
+
+      <div id="datetime" class="text-white mb-3"></div>
+     <div style="
+  padding: 20px;
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  max-width: 100%;
+  margin: 0 auto 20px auto;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+">
+  <h2 style="
+    font-size: 1.8rem;
+    color: #2e7d32;
+    margin-bottom: 10px;
+  ">
+    👋 Welcome to <span style="color: #1b5e20;">EarthScape</span>
+  </h2>
+  <p style="
+    font-size: 1.2rem;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding:1%
+  ">
+    EarthScape Climate Agency is your smart platform for tracking and predicting climate data using real-time insights and machine learning. Here, you can easily forecast <strong>rainfall</strong>, <strong>temperature</strong>, or <strong>humidity</strong> by selecting your desired model and input values. The dashboard helps you stay informed with system tips, visualize trends, review climate alerts, and track your personal activity — including predictions made, visualizations created, and more — all in one responsive interface.
+  </p>
+</div>
+
+
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        🌦 Tip: Check for climate anomalies in the Alerts section.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card p-3">
+            <h6>Assigned Records</h6>
+            <h4><i class="fas fa-database me-2"></i> <span class="count" data-count="1200">0</span></h4>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card p-3">
+            <h6>Visualizations Created</h6>
+            <h4><i class="fas fa-chart-area me-2"></i> <span class="count" data-count="48">0</span></h4>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card p-3">
+            <h6>Predictions Made</h6>
+            <h4><i class="fas fa-robot me-2"></i> <span class="count" data-count="76">0</span></h4>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card p-3">
+            <h6>Alerts Reviewed</h6>
+            <h4><i class="fas fa-bell me-2"></i> <span class="count" data-count="19">0</span></h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4">
+        <h5 class="mb-3"><i class="fas fa-lightbulb text-warning me-2"></i> Analyst Tips</h5>
+        <p>Use the model tab to test different "Machine Learning" algorithms. You can also view historical trends and
+          active anomalies
+          under Alerts.</p>
+        <p>Want to contribute feedback? Click on the Feedback button in the sidebar.</p>
+      </div>
+
+      <div class="card p-4 mt-4">
+        <h5 class="mb-3"><i class="fas fa-history text-primary me-2"></i> Recent Activity</h5>
+        <ul class="list-group list-group-flush">
+          {% if recent_activities %}
+          {% for activity in recent_activities %}
+          <li class="list-group-item bg-transparent text-light border-light">
+            {{ activity.action }} at {{ activity.timestamp.strftime('%I:%M %p %d-%b-%Y') }}
+          </li>
+          {% endfor %}
+          {% else %}
+          <li class="list-group-item bg-transparent text-light border-light">No recent activity.</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Feedback Modal -->
+  <div class="modal fade" id="feedbackModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="feedback-form" class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="fas fa-comment-dots me-2"></i> Send Feedback...</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light text-dark">
+          <p class="text-muted">Your feedback helps us improve the analyst experience. Please share your thoughts or
+            suggestions.</p>
+
+          <label for="message" class="form-label text-dark" style="color: black !important;">Message</label>
+          <textarea name="message" class="form-control" rows="4" required></textarea>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="submit" class="btn btn-success w-100">
+            <i class="fas fa-paper-plane me-1"></i> Send
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast for Feedback -->
+  <div class="toast-container">
+    <div id="feedbackToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">✅ Feedback sent!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Chatbot Bubble -->
+  <!-- Chatbot Bubble -->
+  <div id="chatbotBubble"
+    style="position: fixed; bottom: 90px; right: 20px; width: 400px; background: #2b2b3c; color: white; border-radius: 15px; display: none; flex-direction: column; box-shadow: 0 0 15px rgba(0,0,0,0.3); z-index: 1050; overflow: hidden;">
+
+    <!-- Header with Title & Close Button -->
+    <div
+      style="background: #10b981; padding: 10px 15px; border-top-left-radius: 15px; border-top-right-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
+      <strong><i class="fas fa-robot me-2"></i>EarthScape Bot</strong>
+      <button id="closeChatbot" class="btn btn-sm btn-light rounded-circle" title="Close" style="line-height: 0;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="chatbotMessages" style="padding: 10px; max-height: 300px; overflow-y: auto; font-size: 14px;">
+      <div class="text-white">🌍 I’m your EarthScape assistant — how can I help you?</div>
+    </div>
+
+    <!-- Input + Send -->
+    <div style="padding: 10px; border-top: 1px solid #444;">
+      <div class="input-group">
+        <input type="text" id="chatInput" class="form-control form-control-sm"
+          placeholder="Ask anything about climate..." />
+        <button id="sendChat" class="btn btn-success">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot Toggle Button -->
+  <button id="chatbotBtn" class="btn btn-success rounded-circle shadow"
+    style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; z-index: 1051;">
+    <i class="fas fa-robot"></i>
+  </button>
+
+  <script>
+    // Toggle chatbot
+    $('#closeChatbot').on('click', function () {
+      $('#chatbotBubble').fadeOut();
+    });
+
+
+
+    // Send message (on button click or Enter)
+    function sendChatMessage() {
+      const msg = $('#chatInput').val().trim();
+      if (msg === '') return;
+
+      $('#chatbotMessages').append(`<div class="user-msg">🧑 You: ${msg}</div>`);
+      $('#chatInput').val('');
+
+      $.post("/chatbot", { message: msg }, function (data) {
+        $('#chatbotMessages').append(`<div class="bot-msg">🤖 Bot: ${data.reply}</div>`);
+        $('#chatbotMessages').scrollTop($('#chatbotMessages')[0].scrollHeight);
+      }).fail(function () {
+        $('#chatbotMessages').append(`<div class="bot-msg">❌ Could not connect.</div>`);
+      });
+    }
+
+    // Enter key handler
+    $('#chatInput').on('keypress', function (e) {
+      if (e.which === 13) sendChatMessage();
+    });
+
+    // Send button handler
+    $('#sendChat').on('click', function () {
+      sendChatMessage();
+    });
+  </script>
+
+
+  <script>
+
+
+ 
+  </script>
+
+
+
+</body>
+
+</html>

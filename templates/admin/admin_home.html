@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | EarthScape</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #f0f0f0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+
+
+    @media (max-width: 768px) {
+      .main-content-wrapper {
+        margin-left: 0;
+        padding: 15px;
+      }
+    }
+
+    .card {
+      background: linear-gradient(to bottom right, #1e293b, #334155);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h6 {
+      font-size: 15px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #a5f3fc;
+    }
+
+    .card h4 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .card i {
+      color: #38bdf8;
+    }
+
+    hr {
+      border-color: #475569;
+    }
+
+    canvas {
+      background-color: #1e293b;
+      border-radius: 10px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content-wrapper mt-3">
+    <h2 class="mb-4">📊 Dashboard Overview</h2>
+
+    <!-- Stat Cards -->
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card p-3">
+          <h6>Total Users</h6>
+          <h4><i class="fas fa-users me-2"></i> <span class="counter" data-count="125">0</span></h4>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card p-3">
+          <h6>Climate Records</h6>
+          <h4><i class="fas fa-database me-2"></i> <span class="counter" data-count="980">0</span></h4>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card p-3">
+          <h6>Active Alerts</h6>
+          <h4><i class="fas fa-bell me-2"></i> <span class="counter" data-count="23">0</span></h4>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card p-3">
+          <h6>Feedback Received</h6>
+          <h4><i class="fas fa-comment-alt me-2"></i> <span class="counter" data-count="47">0</span></h4>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-4 border-light">
+
+    <!-- Charts -->
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h6>🌡 Temperature Over Time</h6>
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h6>📊 Rainfall, Humidity & Wind</h6>
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h6>☁️ Weather Composition</h6>
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card p-3">
+          <h6>🤖 Model Prediction Output</h6>
+          <canvas id="modelChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | EarthScape</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+    }
+    .sidebar {
+      width: 100%;
+      max-width: 220px;
+      background-color: #2b2b3c;
+      min-height: 100vh;
+      padding: 20px;
+      position: fixed;
+      border-right: 1px solid #444;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 15px;
+      color: #bbb;
+      text-decoration: none;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      transition: 0.2s;
+    }
+    .sidebar a:hover {
+      background-color: #3c3c4f;
+      color: white;
+    }
+    .main {
+      margin-left: 220px;
+      padding: 30px;
+    }
+    @media (max-width: 768px) {
+      .sidebar { position: relative; width: 100%; }
+      .main { margin-left: 0; padding: 15px; }
+    }
+    .admin-header {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      background-color: #2a2a3b;
+      border-bottom: 1px solid #444;
+    }
+    .card {
+      background: #2b2b3c;
+      border: none;
+      color: white;
+    }
+    .card canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .user-msg {
+    background-color: #198754; /* Bootstrap success */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 15px 15px 0 15px;
+    margin: 6px 0;
+    max-width: 75%;
+    margin-left: auto;
+    text-align: right;
+    display: inline-block;
+  }
+
+  .bot-msg {
+    background-color: #444;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 15px 15px 15px 0;
+    margin: 6px 0;
+    max-width: 75%;
+    margin-right: auto;
+    text-align: left;
+    display: inline-block;
+  }
+
+  #chatbotMessages > div {
+    display: flex;
+    flex-direction: column;
+
+  }
+  </style>
+</head>
+<body>
+  <div class="d-flex flex-column flex-md-row">
+    <div class="sidebar">
+      <h5 class="text-center">🌿 EarthScape</h5>
+      <a href="#" class="sidebar-link" data-url="/admin/home"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#" class="sidebar-link" data-url="/admin/users"><i class="fas fa-users-cog"></i> Manage Users</a>
+      <a href="#" class="sidebar-link" data-url="/admin/upload"><i class="fas fa-upload"></i> Upload Data</a>
+      <a href="#" class="sidebar-link" data-url="/admin/model"><i class="fas fa-robot"></i> Model Prediction</a>
+     
+      <a href="#" class="sidebar-link" data-url="/admin/profile"><i class="fas fa-user"></i> Profile</a>
+      <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Feedback Modal -->
+  <div class="modal fade" id="feedbackModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="feedback-form" class="modal-content border-0 shadow-lg rounded-4">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="fas fa-comment-dots me-2"></i> Send Feedback...</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light text-dark">
+          <p class="text-muted">Your feedback helps us improve the analyst experience. Please share your thoughts or
+            suggestions.</p>
+
+          <label for="message" class="form-label text-dark" style="color: black !important;">Message</label>
+          <textarea name="message" class="form-control" rows="4" required></textarea>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="submit" class="btn btn-success w-100">
+            <i class="fas fa-paper-plane me-1"></i> Send
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast for Feedback -->
+  <div class="toast-container">
+    <div id="feedbackToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">✅ Feedback sent!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+    <div class="main w-100">
+      <div class="admin-header">
+        <div class="d-flex align-items-center gap-3">
+          <img src="{{ user.profile_img or '/static/default.jpg' }}" class="rounded-circle border" width="40" height="40" style="object-fit: cover;">
+          <h5 class="mb-0">{{ user.username or "Admin" }}’s Dashboard</h5>
+        </div>
+        <div class="text-end">
+          <i class="fas fa-circle-user me-1"></i> {{ user.email }}
+        </div>
+      </div>
+
+      <div class="main-content-wrapper mt-3">
+        <h2 class="mb-4">📊 Overview</h2>
+        <div class="row g-4">
+  <div class="col-md-6 col-lg-3">
+    <div class="card p-3">
+      <h6>Total Users</h6>
+      <h4><i class="fas fa-users me-2"></i> <span class="counter" data-count="125">0</span></h4>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="card p-3">
+      <h6>Climate Records</h6>
+      <h4><i class="fas fa-database me-2"></i> <span class="counter" data-count="980">0</span></h4>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="card p-3">
+      <h6>Active Alerts</h6>
+      <h4><i class="fas fa-bell me-2"></i> <span class="counter" data-count="23">0</span></h4>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <div class="card p-3">
+      <h6>Feedback Received</h6>
+      <h4><i class="fas fa-comment-alt me-2"></i> <span class="counter" data-count="47">0</span></h4>
+    </div>
+  </div>
+</div>
+
+
+        <hr class="my-4 border-light">
+
+        <!-- Charts -->
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card p-3">
+              <h6>🌡 Temperature Over Time</h6>
+              <canvas id="lineChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card p-3">
+              <h6>📊 Rainfall, Humidity & Wind</h6>
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card p-3">
+              <h6>☁️ Weather Composition</h6>
+              <canvas id="pieChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card p-3">
+              <h6>🤖 Model Prediction Output</h6>
+              <canvas id="modelChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!-- Chatbot Bubble -->
+<div id="chatbotBubble" style="position: fixed; bottom: 90px; right: 20px; width: 420px; background: #1c1f2b; color: white; border-radius: 16px; display: none; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 1050; font-family: 'Inter', sans-serif;">
+  <div style="background: #10b981; padding: 14px 20px; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+    <strong style="font-size: 16px;"><i class="fas fa-robot me-2"></i>EarthScape Bot</strong>
+  </div>
+
+  <div id="chatbotMessages" style="padding: 15px; max-height: 350px; overflow-y: auto; font-size: 14px; color: #d1d5db;">
+    <div style="color: #cbd5e1; margin-bottom: 10px;">👋 Hello! Please describe your issue.</div>
+  </div>
+
+  <div style="padding: 12px; border-top: 1px solid #2e3440;">
+    <input type="text" id="chatInput" class="form-control form-control-sm" placeholder="Ask me anything about climate..." style="background-color: whitesmoke; border: none; border-radius: 8px; color: black; padding: 10px;" />
+  </div>
+</div>
+
+<!-- Chatbot Toggle Button -->
+<button id="chatbotBtn" class="btn btn-success rounded-circle shadow" style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; z-index: 1051;">
+  <i class="fas fa-robot"></i>
+</button>
+
+<script>
+  $('#chatbotBtn').on('click', function () {
+    $('#chatbotBubble').fadeToggle();
+  });
+
+  $('#chatInput').on('keypress', function (e) {
+    if (e.which === 13 && this.value.trim() !== '') {
+      const msg = this.value.trim();
+      $('#chatbotMessages').append(`<div class="user-msg">🧑 You: ${msg}</div>`);
+      this.value = '';
+
+      $.post("/chatbot", { message: msg }, function (data) {
+        $('#chatbotMessages').append(`<div class="bot-msg">🤖 Bot: ${data.reply}</div>`);
+        $('#chatbotMessages').scrollTop($('#chatbotMessages')[0].scrollHeight);
+      }).fail(function () {
+        $('#chatbotMessages').append(`<div class="bot-msg">❌ Could not connect.</div>`);
+      });
+    }
+  });
+</script>
+
+
+  <!-- Counter Animation Script -->
+  <script>
+
+        // Feedback AJAX
+    document.getElementById('feedback-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const message = this.querySelector('textarea[name="message"]').value;
+
+      fetch('/analyst/submit_feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'message=' + encodeURIComponent(message)
+      }).then(res => {
+        if (res.ok) {
+          new bootstrap.Toast(document.getElementById('feedbackToast')).show();
+          bootstrap.Modal.getInstance(document.getElementById('feedbackModal')).hide();
+          this.reset();
+        }
+      });
+    });
+
+
+
+    function animateCounter(el, target) {
+      let count = 0;
+      const speed = 10;
+      const increment = Math.ceil(target / 100);
+
+      const update = () => {
+        count += increment;
+        if (count > target) count = target;
+        el.textContent = count;
+        if (count < target) requestAnimationFrame(update);
+      };
+      update();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.counter').forEach(el => {
+        const target = parseInt(el.getAttribute('data-count')) || 0;
+        animateCounter(el, target);
+      });
+    });
+  </script>
+
+  <!-- Chart Load Script -->
+  <script>
+    fetch("/api/climate-overview")
+      .then(res => res.json())
+      .then(data => {
+        const labels = data.labels;
+        const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+
+        const options = {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#ddd' } } },
+          scales: {
+            x: { ticks: { color: '#aaa' }, grid: { color: '#333' } },
+            y: { ticks: { color: '#aaa' }, grid: { color: '#333' } }
+          }
+        };
+
+        new Chart(document.getElementById('lineChart'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Temperature (°C)',
+              data: data.temperature,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16,185,129,0.2)',
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options
+        });
+
+        new Chart(document.getElementById('barChart'), {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Rainfall (mm)', data: data.rainfall, backgroundColor: '#3b82f6' },
+              { label: 'Humidity (%)', data: data.humidity, backgroundColor: '#f59e0b' },
+              { label: 'Wind Speed (km/h)', data: data.wind_speed, backgroundColor: '#ef4444' }
+            ]
+          },
+          options
+        });
+
+        new Chart(document.getElementById('pieChart'), {
+          type: 'pie',
+          data: {
+            labels: ['Rainfall', 'Humidity', 'Wind Speed'],
+            datasets: [{
+              data: [avg(data.rainfall), avg(data.humidity), avg(data.wind_speed)],
+              backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444']
+            }]
+          },
+          options: { plugins: { legend: { position: 'bottom', labels: { color: '#ddd' } } } }
+        });
+
+        fetch('/api/model-predictions')
+          .then(res => res.json())
+          .then(pred => {
+            new Chart(document.getElementById('modelChart'), {
+              type: 'bar',
+              data: {
+                labels: pred.labels,
+                datasets: [{
+                  label: 'Predicted Humidity',
+                  data: pred.humidity,
+                  backgroundColor: '#8b5cf6'
+                }]
+              },
+              options
+            });
+          });
+      });
+  </script>
+
+  <!-- AJAX Sidebar Loader -->
+  <script>
+    $(document).on('click', '.sidebar-link', function (e) {
+      e.preventDefault();
+      const url = $(this).data('url');
+      $.get(url, function (html) {
+        $('.main-content-wrapper').html(html);
+      }).fail(function () {
+        alert('❌ Page could not be loaded. Check route or network error.');
+      });
+    });
+  </script>
+</body>
+</html>

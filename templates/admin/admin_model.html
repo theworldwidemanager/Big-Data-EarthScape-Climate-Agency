@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Climate Model Prediction</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      /* padding: 30px; */
+    }
+
+    .card {
+      background-color: #1e293b;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .form-label,
+    label {
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .form-control,
+    .form-select {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+
+    .table th,
+    .table td {
+      vertical-align: middle;
+    }
+
+    .toast {
+      color: white;
+    }
+
+    .btn-close {
+      filter: invert(1);
+    }
+
+    canvas {
+      background-color: #1e293b;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card p-4 mb-5">
+    <h4 class="mb-4 text-light"><i class="fas fa-brain text-light"></i> Smart Climate Prediction</h4>
+    <form id="modelForm" onsubmit="return false;">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">🧠 Select Model</label>
+          <select class="form-select" name="ml_model" id="ml_model" required>
+            <option value="decision_tree">Decision Tree</option>
+            <option value="linear_regression">Linear Regression</option>
+            <option value="svr">SVR (Support Vector)</option>
+            <option value="polynomial">Polynomial Regression</option>
+            <option value="Random">Random forest</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">🔍 Predict Target</label>
+          <select class="form-select" id="target" name="target" required>
+            <option value="humidity">Humidity</option>
+            <option value="rainfall">Rainfall</option>
+            <option value="temperature">Temperature</option>
+          </select>
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">🌬 Wind Speed (km/h)</label>
+          <input type="number" name="wind_speed_input" class="form-control" placeholder="Optional" />
+        </div>
+
+        <div class="col-md-3 form-field" id="tempField">
+          <label class="form-label">🌡 Temperature °C </label>
+          <input type="number" name="temp_input" class="form-control" required />
+        </div>
+        <div class="col-md-3 form-field" id="humidityField">
+          <label class="form-label">💧 Humidity %</label>
+          <input type="number" name="humidity_input" class="form-control" />
+        </div>
+        <div class="col-md-3 form-field" id="rainfallField">
+          <label class="form-label">🌧 Rainfall mm</label>
+          <input type="number" name="rainfall_input" class="form-control" />
+        </div>
+
+        <div class="col-md-3 d-grid align-content-end">
+          <button type="submit" class="btn btn-success mt-2"><i class="fas fa-bolt"></i> Predict</button>
+        </div>
+      </div>
+    </form>
+
+
+    <!-- 🔄 Loader -->
+    <div id="loader" class="text-center my-4" style="display: none;">
+      <div class="spinner-border text-info" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="mt-2 text-danger">Running prediction using selected model...</div>
+    </div>
+
+    <!-- ✅ Result -->
+    <div id="predictionResult" class="mt-3"></div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0 text-light">📊 Prediction History</h5>
+      <button onclick="exportTableToCSV('predictionTableBody', 'predictions.csv')" class="btn btn-warning">
+        <i class="fas fa-file-csv"></i> Export CSV
+      </button>
+    </div>
+    <table class="table table-dark table-bordered text-white">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Temperature</th>
+          <th>Humidity</th>
+          <th>Rainfall</th>
+          <th>Wind Speed</th>
+          <th>🔮 Predicted Value</th>
+        </tr>
+      </thead>
+      <tbody id="predictionTableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card p-4 position-relative">
+    <h5 class="text-light mt-4">📊 Model Comparison</h5>
+
+    <!-- Compare Button -->
+    <button onclick="compareModels()" class="btn btn-info mb-3">
+      <i class="fas fa-chart-bar"></i> Compare Models
+    </button>
+
+    <!-- 🔽 Download Icon Button (Top-Right corner of canvas) -->
+    <div class="card p-4 position-relative">
+      <h5 class="text-light mt-4">📊 Model Comparison</h5>
+
+      <!-- Compare Button -->
+      <button onclick="compareModels()" class="btn btn-info mb-3">
+        <i class="fas fa-chart-bar"></i> Compare Models
+      </button>
+
+      <!-- 🔽 Download Icon Button (Top-Right corner of canvas) -->
+      <button onclick="downloadCompareChart()" class="btn btn-outline-light btn-sm position-absolute"
+        style="top: 10px; right: 10px; z-index: 2;" title="Download Chart Image">
+        <i class="fas fa-download"></i>
+      </button>
+
+      <!-- Chart -->
+      <canvas id="compareChart" height="150"></canvas>
+    </div>
+
+
+    <!-- Chart -->
+    <canvas id="compareChart" height="150"></canvas>
+  </div>
+
+  <div class="card p-4 mt-3">
+    <button onclick="downloadPredictionChart()" class="btn btn-outline-light btn-sm position-absolute"
+      style="top: 10px; right: 10px; z-index: 2;" title="Download Chart Image">
+      <i class="fas fa-download"></i>
+    </button>
+    <h5 class="text-light">📈 Chart: Rainfall, Temp & Humidity</h5>
+    <canvas id="predictionChart" height="150"></canvas>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+
+    $(document).ready(function () {
+      loadPredictionHistory();
+
+      $('#target').on('change', function () {
+        const val = $(this).val();
+        $('#tempField').show();
+        $('#humidityField').show();
+        $('#rainfallField').show();
+
+        if (val === 'humidity') $('#humidityField').hide();
+        if (val === 'temperature') $('#tempField').hide();
+        if (val === 'rainfall') $('#rainfallField').hide();
+      }).trigger('change');
+
+      $('#modelForm').on('submit', function (e) {
+        e.preventDefault(); // ✅ prevent reload
+        $('#predictionResult').empty();
+        $('#loader').show();
+
+        const formData = $(this).serialize();
+
+        $.post('/admin/train-model', formData, function (response) {
+          $('#loader').hide();
+
+          const modelName = $('#ml_model option:selected').text();
+          if (response.success) {
+            let html = `
+          <div class="alert alert-success">
+            ✅ <strong>${modelName}</strong> predicted <strong>${response.target}</strong>: ${response.value}
+          </div>`;
+
+            if (response.alerts && response.alerts.length > 0) {
+              html += `
+            <div class="alert alert-warning mt-2">
+              <strong>⚠ Climate Alerts:</strong>
+              <ul class="mb-0">` +
+                      response.alerts.map(a => `<li>${a}</li>`).join('') +
+                      `</ul>
+            </div>`;
+                  }
+
+            $('#predictionResult').html(html);
+
+
+            const data = {
+              temperature: $('[name="temp_input"]').val() || (response.target === "temperature" ? response.value : ''),
+              humidity: $('[name="humidity_input"]').val() || (response.target === "humidity" ? response.value : ''),
+              rainfall: $('[name="rainfall_input"]').val() || (response.target === "rainfall" ? response.value : ''),
+              wind_speed: $('[name="wind_speed_input"]').val()
+            };
+            addPredictionToHistory(data, response.target, response.value);
+
+            if (data.temperature > 40) showToast(`🔥 High temperature: ${data.temperature}`, 'danger');
+            if (data.humidity < 20) showToast(`💧 Low humidity: ${data.humidity}`, 'danger');
+            if (data.rainfall > 20) showToast(`☔️ Heavy rainfall: ${data.rainfall}`, 'danger');
+          } else {
+            $('#predictionResult').html(`<div class="alert alert-danger">❌ ${response.error}</div>`);
+          }
+        }).fail(() => {
+          $('#loader').hide();
+          $('#predictionResult').html(`<div class="alert alert-danger">❌ Server error occurred.</div>`);
+        });
+      });
+    });
+
+
+    // ⏺ Chart initialize
+    const ctx = document.getElementById("predictionChart").getContext("2d");
+    const predictionChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: "Temperature",
+            backgroundColor: "#f97316",
+            data: [],
+          },
+          {
+            label: "Humidity",
+            backgroundColor: "#0ea5e9",
+            data: [],
+          },
+          {
+            label: "Rainfall",
+            backgroundColor: "#22c55e",
+            data: [],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: {
+              color: "white"
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: "white",
+            },
+          },
+          y: {
+            ticks: {
+              color: "white",
+            },
+          },
+        },
+      },
+    });
+
+    // ⏺ Show toast message
+    function showToast(msg, type = "info") {
+      const toast = document.createElement("div");
+      toast.className = `toast align-items-center text-bg-${type} border-0 show`;
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.right = "20px";
+      toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${msg}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    function exportTableToCSV(tableId, filename) {
+      const rows = document.querySelectorAll(`#${tableId} tr`);
+      let csv = [];
+
+      // Header
+      const headers = ["Timestamp", "Temperature", "Humidity", "Rainfall", "Wind Speed", "Predicted"];
+      csv.push(headers.join(","));
+
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td");
+        if (cols.length === 0) return; // Skip headers or empty rows
+
+        // Helper to handle value or fallback to "-"
+        const getValue = (cell, unit) => {
+          const text = cell?.innerText.trim();
+          return (text && text !== "-") ? `${text}${unit}` : "-";
+        };
+
+        const timestamp = cols[0]?.innerText.trim() || "-";
+        const temp = getValue(cols[1], "°C");
+        const humidity = getValue(cols[2], "%");
+        const rainfall = getValue(cols[3], " mm");
+        const wind = getValue(cols[4], " km/h");
+        const predicted = cols[5]?.innerText.trim() || "-";
+
+        const rowData = [timestamp, temp, humidity, rainfall, wind, predicted];
+        csv.push(rowData.map(val => `"${val}"`).join(","));
+      });
+
+      const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(csvFile);
+      link.download = filename;
+      link.click();
+    }
+
+    function loadPredictionHistory() {
+      $.get("/admin/get-prediction-history", function (res) {
+        if (res.success) {
+          const table = $("#predictionTableBody");
+          table.empty(); // Clear existing rows
+
+          res.history.forEach(record => {
+            const row = `
+          <tr>
+            <td>${new Date(record.timestamp).toLocaleString()}</td>
+            <td>${record.temperature ?? '-'}</td>
+            <td>${record.humidity ?? '-'}</td>
+            <td>${record.rainfall ?? '-'}</td>
+            <td>${record.wind_speed ?? '-'}</td>
+            <td><strong>${record.target}</strong>: ${record.predicted_value}</td>
+          </tr>
+        `;
+            table.append(row);
+          });
+        } else {
+          console.error("Failed to fetch prediction history:", res.error);
+        }
+      });
+    }
+
+
+    function addPredictionToHistory(data, predictedTarget, predictedValue) {
+      const now = new Date().toLocaleString();
+
+      // ✅ Ensure values are numbers (or 0 if empty)
+      const temperature = parseFloat(data.temperature) || 0;
+      const humidity = parseFloat(data.humidity) || 0;
+      const rainfall = parseFloat(data.rainfall) || 0;
+
+      // 🧾 Add to Table
+      const row = `
+    <tr>
+      <td>${now}</td>
+      <td>${temperature}</td>
+      <td>${humidity}</td>
+      <td>${rainfall}</td>
+      <td>${data.wind_speed || '-'}</td>
+      <td><strong>${predictedTarget}</strong>: ${predictedValue}</td>
+    </tr>`;
+      $('#predictionTableBody').prepend(row);
+
+      // 📊 Add to Chart
+      predictionChart.data.labels.unshift(now.split(",")[1].trim());
+      predictionChart.data.datasets[0].data.unshift(temperature);
+      predictionChart.data.datasets[1].data.unshift(humidity);
+      predictionChart.data.datasets[2].data.unshift(rainfall);
+
+      // ✅ Limit to last 10 entries (optional)
+      if (predictionChart.data.labels.length > 10) {
+        predictionChart.data.labels.pop();
+        predictionChart.data.datasets.forEach(ds => ds.data.pop());
+      }
+
+      predictionChart.update();
+    }
+
+
+function compareModels() {
+  const target = $('#target').val();
+
+  $.get(`/admin/evaluate-models?target=${target}`, function (data) {
+    const ctx = document.getElementById("compareChart").getContext("2d");
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.models,
+        datasets: [
+          {
+            label: "RMSE",
+            data: data.rmse,
+            backgroundColor: "#22c55e",
+          },
+          {
+            label: "MAE",
+            data: data.mae,
+            backgroundColor: "#facc15",
+          }
+        ]
+      },
+      options: {
+        plugins: {
+          legend: { labels: { color: 'white' } }
+        },
+        scales: {
+          x: { ticks: { color: 'white' } },
+          y: { ticks: { color: 'white' } }
+        }
+      }
+    });
+  });
+}
+  function downloadCompareChart() {
+    const canvas = document.getElementById("compareChart");
+    const image = canvas.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "compare_chart.png";
+    link.click();
+  }
+
+  function downloadPredictionChart() {
+  const canvas = document.getElementById("predictionChart");
+  const image = canvas.toDataURL("image/png");
+
+  const link = document.createElement("a");
+  link.href = image;
+  link.download = "prediction_chart.png";
+  link.click();
+}
+
+
+  </script>
+
+
+</body>
+
+</html>
