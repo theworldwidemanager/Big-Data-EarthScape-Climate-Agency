@@ -1,4 +1,4 @@
-<!-- 📤 Upload Form -->
+<!-- Upload Form -->
 <div class="card p-4">
   <h4 class="mb-3"><i class="fas fa-upload"></i> Step 1: Upload Your Climate Dataset (.csv or .json)</h4>
   <p class="text-white">Please upload a file containing temperature, humidity, rainfall, and wind speed data.</p>
@@ -21,14 +21,14 @@ temperature,humidity,rainfall,wind_speed
   </form>
 
   <div class="alert alert-warning mt-4" id="uploadReminder">
-    ℹ️ Please upload your climate data file first to enable prediction.
+    Please upload your climate data file first to enable prediction.
   </div>
 
   <div id="uploadStatus" class="mt-4"></div>
   <div id="errorList" class="text-warning mt-2"></div>
 </div>
 
-<!-- 🤖 Prediction Form (Initially Hidden) -->
+<!-- Prediction Form (Initially Hidden) -->
 <div id="predictionForm" class="card p-4 mt-4 d-none">
   <h4 class="mb-3"><i class="fas fa-robot"></i> Step 2: Predict Any Climate Attribute</h4>
   <p class="text-white">Choose a target to predict using machine learning models. Enter known values and leave the
@@ -90,9 +90,9 @@ temperature,humidity,rainfall,wind_speed
         if (data.success) {
           $('#uploadStatus').html(`
           <div class="alert alert-success">
-            ✅ File uploaded successfully!<br>
-            ✔️ ${data.inserted} new records added<br>
-            ⚠️ ${data.skipped} duplicates skipped.
+            File uploaded successfully!<br>
+            ${data.inserted} new records added<br>
+            ${data.skipped} duplicates skipped.
           </div>
         `);
 
@@ -102,22 +102,22 @@ temperature,humidity,rainfall,wind_speed
 
           $('#uploadReminder').hide();
 
-          // ✅ Show prediction form
+          // Show prediction form
           $('#predictionForm').removeClass('d-none');
-          // ✅ Smooth scroll to prediction form
+          // Smooth scroll to prediction form
           document.getElementById("predictionForm").scrollIntoView({ behavior: 'smooth' });
         } else {
-          $('#uploadStatus').html(`<div class="alert alert-danger">❌ ${data.message}</div>`);
+          $('#uploadStatus').html(`<div class="alert alert-danger">${data.message}</div>`);
         }
-         $('button[type="submit"]').prop('disabled', false); // 🔓 Re-enable on success
+         $('button[type="submit"]').prop('disabled', false); // Re-enable on success
       })
       .catch(() => {
-        $('#uploadStatus').html('<div class="alert alert-danger">❌ Server error. Please try again.</div>');
-         $('button[type="submit"]').prop('disabled', false); // 🔓 Re-enable on error
+        $('#uploadStatus').html('<div class="alert alert-danger">Server error. Please try again.</div>');
+         $('button[type="submit"]').prop('disabled', false); // Re-enable on error
       });
   });
 
-  // 📊 Handle Prediction Submit
+  // Handle Prediction Submit
   $('#predictModelForm').on('submit', function (e) {
     e.preventDefault();
     const formData = new FormData(this);
@@ -128,9 +128,9 @@ temperature,humidity,rainfall,wind_speed
     }).then(res => res.json())
       .then(data => {
         if (data.success) {
-          $('#predictOutput').html(`<div class="alert alert-info">📊 Predicted ${data.target}: <strong>${data.value}</strong></div>`);
+          $('#predictOutput').html(`<div class="alert alert-info">Predicted ${data.target}: <strong>${data.value}</strong></div>`);
         } else {
-          $('#predictOutput').html(`<div class="alert alert-danger">❌ ${data.error}</div>`);
+          $('#predictOutput').html(`<div class="alert alert-danger">${data.error}</div>`);
         }
       });
   });
@@ -141,7 +141,7 @@ temperature,humidity,rainfall,wind_speed
       close: true,
       gravity: "top",
       position: "right",
-      backgroundColor: type === 'alert' ? "#f44336" : "#2196F3"
+      backgroundColor: type === 'alert' ? "#0D0D0D" : "#F2A900"
     }).showToast();
   }
 </script>

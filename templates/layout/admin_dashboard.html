@@ -3,42 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard | EarthScape</title>
+  <title>Admin Dashboard | EarthScape Climate Agency</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
+    :root {
+      --black: #0D0D0D;
+      --black-2: #1A1A1A;
+      --gold: #F2A900;
+      --gold-hover: #FFC229;
+      --white: #FFFFFF;
+      --silver: #B0B0B0;
+      --dark-gray: #2B2B2B;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
-      background-color: #1e1e2f;
-      color: #f0f0f0;
+      background: linear-gradient(180deg, var(--black) 0%, #121212 100%);
+      color: var(--white);
     }
     .sidebar {
       width: 100%;
       max-width: 220px;
-      background-color: #2b2b3c;
+      background: rgba(26,26,26,0.95);
       min-height: 100vh;
       padding: 20px;
       position: fixed;
-      border-right: 1px solid #444;
+      border-right: 1px solid rgba(176,176,176,0.18);
+      box-shadow: inset -1px 0 0 rgba(242,169,0,0.14);
     }
     .sidebar a {
       display: flex;
       align-items: center;
       gap: 10px;
       padding: 10px 15px;
-      color: #bbb;
+      color: var(--silver);
       text-decoration: none;
-      border-radius: 6px;
+      border-radius: 10px;
       margin-bottom: 10px;
-      transition: 0.2s;
+      transition: 0.2s ease;
     }
     .sidebar a:hover {
-      background-color: #3c3c4f;
-      color: white;
+      background: rgba(242,169,0,0.1);
+      color: var(--white);
+    }
+    .sidebar .brand-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(176,176,176,0.18);
+    }
+    .sidebar .brand-wrap img {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      object-fit: contain;
+    }
+    .sidebar h5 {
+      margin: 0;
+      color: var(--white);
+      font-weight: 700;
     }
     .main {
       margin-left: 220px;
@@ -54,54 +85,212 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 30px;
-      background-color: #2a2a3b;
-      border-bottom: 1px solid #444;
+      background: rgba(26,26,26,0.9);
+      border: 1px solid rgba(242,169,0,0.16);
+      border-radius: 14px;
+      box-shadow: 0 12px 24px rgba(242,169,0,0.08);
     }
     .card {
-      background: #2b2b3c;
-      border: none;
-      color: white;
+      background: linear-gradient(180deg, rgba(42,42,42,0.98), rgba(26,26,26,0.98));
+      border: 1px solid rgba(242,169,0,0.12);
+      color: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 14px 24px rgba(242,169,0,0.08);
     }
     .card canvas {
       width: 100% !important;
       height: auto !important;
     }
-
     .user-msg {
-    background-color: #198754; /* Bootstrap success */
-    color: white;
-    padding: 8px 12px;
-    border-radius: 15px 15px 0 15px;
-    margin: 6px 0;
-    max-width: 75%;
-    margin-left: auto;
-    text-align: right;
-    display: inline-block;
-  }
+      background: rgba(242,169,0,0.18);
+      border: 1px solid rgba(242,169,0,0.3);
+      color: var(--white);
+      padding: 8px 12px;
+      border-radius: 15px 15px 0 15px;
+      margin: 6px 0;
+      max-width: 75%;
+      margin-left: auto;
+      text-align: right;
+      display: inline-block;
+    }
 
-  .bot-msg {
-    background-color: #444;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 15px 15px 15px 0;
-    margin: 6px 0;
-    max-width: 75%;
-    margin-right: auto;
-    text-align: left;
-    display: inline-block;
-  }
+    .bot-msg {
+      background: rgba(176,176,176,0.1);
+      color: var(--white);
+      padding: 8px 12px;
+      border-radius: 15px 15px 15px 0;
+      margin: 6px 0;
+      max-width: 75%;
+      margin-right: auto;
+      text-align: left;
+      display: inline-block;
+    }
 
-  #chatbotMessages > div {
-    display: flex;
-    flex-direction: column;
-
-  }
+    #chatbotMessages > div {
+      display: flex;
+      flex-direction: column;
+    }
+    #chatbotBubble {
+      background: rgba(26,26,26,0.96);
+      border: 1px solid rgba(242,169,0,0.24);
+      box-shadow: 0 18px 40px rgba(242,169,0,0.15);
+    }
+    #chatbotBubble .chat-header {
+      background: rgba(242,169,0,0.12);
+      color: var(--white);
+      border-bottom: 1px solid rgba(242,169,0,0.2);
+    }
+    .btn-success,
+    .btn-success:hover,
+    .btn-success:focus {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      color: #0D0D0D !important;
+      box-shadow: none !important;
+    }
+    .bg-success,
+    .toast.bg-success,
+    .badge.bg-success {
+      background: var(--gold) !important;
+      color: #0D0D0D !important;
+    }
+    .text-success,
+    .spinner-border.text-success {
+      color: var(--gold) !important;
+    }
+    .alert-success,
+    .alert-info,
+    .alert-warning {
+      background: rgba(242,169,0,0.12) !important;
+      border: 1px solid rgba(242,169,0,0.2) !important;
+      color: var(--white) !important;
+    }
+    .btn-info,
+    .btn-info:hover,
+    .btn-info:focus {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      color: #0D0D0D !important;
+      box-shadow: none !important;
+    }
+    #chatbotBtn {
+      background: var(--gold) !important;
+      border: none !important;
+      color: #0D0D0D !important;
+    }
+    .badge {
+      background: var(--gold) !important;
+      color: #0D0D0D !important;
+    }
+    .btn-primary,
+    .btn-secondary,
+    .btn-success,
+    .btn-danger,
+    .btn-warning,
+    .btn-info,
+    .btn-light,
+    .btn-dark,
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-success:hover,
+    .btn-danger:hover,
+    .btn-warning:hover,
+    .btn-info:hover,
+    .btn-light:hover,
+    .btn-dark:hover,
+    .btn-primary:focus,
+    .btn-secondary:focus,
+    .btn-success:focus,
+    .btn-danger:focus,
+    .btn-warning:focus,
+    .btn-info:focus,
+    .btn-light:focus,
+    .btn-dark:focus {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      color: #0D0D0D !important;
+      box-shadow: 0 8px 18px rgba(242,169,0,0.16) !important;
+    }
+    .btn-outline-primary,
+    .btn-outline-secondary,
+    .btn-outline-success,
+    .btn-outline-danger,
+    .btn-outline-warning,
+    .btn-outline-info,
+    .btn-outline-light,
+    .btn-outline-dark {
+      color: var(--gold) !important;
+      border-color: var(--gold) !important;
+      background: transparent !important;
+    }
+    .btn-outline-primary:hover,
+    .btn-outline-secondary:hover,
+    .btn-outline-success:hover,
+    .btn-outline-danger:hover,
+    .btn-outline-warning:hover,
+    .btn-outline-info:hover,
+    .btn-outline-light:hover,
+    .btn-outline-dark:hover {
+      color: #0D0D0D !important;
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+    }
+    .text-primary,
+    .text-secondary,
+    .text-success,
+    .text-danger,
+    .text-warning,
+    .text-info,
+    .text-muted {
+      color: var(--silver) !important;
+    }
+    .bg-primary,
+    .bg-secondary,
+    .bg-success,
+    .bg-danger,
+    .bg-warning,
+    .bg-info,
+    .bg-light,
+    .bg-dark {
+      background: var(--black-2) !important;
+      color: var(--white) !important;
+    }
+    .alert-primary,
+    .alert-secondary,
+    .alert-success,
+    .alert-danger,
+    .alert-warning,
+    .alert-info,
+    .toast,
+    .toast .toast-body {
+      background: rgba(242,169,0,0.12) !important;
+      border-color: rgba(242,169,0,0.24) !important;
+      color: var(--white) !important;
+    }
+    .table {
+      --bs-table-color: var(--silver);
+      --bs-table-bg: var(--black-2);
+      --bs-table-border-color: rgba(176,176,176,0.22);
+      --bs-table-striped-bg: rgba(255,255,255,0.04);
+      --bs-table-hover-bg: rgba(242,169,0,0.10);
+      --bs-table-hover-color: var(--white);
+    }
+    .border,
+    .border-top,
+    .border-end,
+    .border-bottom,
+    .border-start {
+      border-color: rgba(176,176,176,0.28) !important;
+    }
   </style>
 </head>
 <body>
   <div class="d-flex flex-column flex-md-row">
     <div class="sidebar">
-      <h5 class="text-center">🌿 EarthScape</h5>
+      <div class="brand-wrap">
+        <img src="/static/logo.png" alt="EarthScape Climate Agency logo" />
+        <h5>EarthScape Climate Agency</h5>
+      </div>
       <a href="#" class="sidebar-link" data-url="/admin/home"><i class="fas fa-home"></i> Dashboard</a>
       <a href="#" class="sidebar-link" data-url="/admin/users"><i class="fas fa-users-cog"></i> Manage Users</a>
       <a href="#" class="sidebar-link" data-url="/admin/upload"><i class="fas fa-upload"></i> Upload Data</a>
@@ -139,7 +328,7 @@
   <div class="toast-container">
     <div id="feedbackToast" class="toast align-items-center text-white bg-success border-0" role="alert">
       <div class="d-flex">
-        <div class="toast-body">✅ Feedback sent!</div>
+        <div class="toast-body">Feedback sent.</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
@@ -148,16 +337,16 @@
     <div class="main w-100">
       <div class="admin-header">
         <div class="d-flex align-items-center gap-3">
-          <img src="{{ user.profile_img or '/static/default.jpg' }}" class="rounded-circle border" width="40" height="40" style="object-fit: cover;">
-          <h5 class="mb-0">{{ user.username or "Admin" }}’s Dashboard</h5>
+          <img src="{{ user.profile_img or '/static/default.jpg' }}" class="rounded-circle border" width="40" height="40" style="object-fit: cover; border-color: rgba(242,169,0,0.5);">
+          <h5 class="mb-0">{{ user.username or "Admin" }} Dashboard</h5>
         </div>
-        <div class="text-end">
-          <i class="fas fa-circle-user me-1"></i> {{ user.email }}
+        <div class="text-end text-secondary">
+          <i class="fas fa-circle-user me-1" style="color: var(--gold);"></i> {{ user.email }}
         </div>
       </div>
 
       <div class="main-content-wrapper mt-3">
-        <h2 class="mb-4">📊 Overview</h2>
+        <h2 class="mb-4" style="color: var(--white); letter-spacing: -0.03em;">Overview</h2>
         <div class="row g-4">
   <div class="col-md-6 col-lg-3">
     <div class="card p-3">
@@ -192,25 +381,25 @@
         <div class="row g-4">
           <div class="col-md-6">
             <div class="card p-3">
-              <h6>🌡 Temperature Over Time</h6>
+              <h6>Temperature Over Time</h6>
               <canvas id="lineChart"></canvas>
             </div>
           </div>
           <div class="col-md-6">
             <div class="card p-3">
-              <h6>📊 Rainfall, Humidity & Wind</h6>
+              <h6>Rainfall, Humidity & Wind</h6>
               <canvas id="barChart"></canvas>
             </div>
           </div>
           <div class="col-md-6">
             <div class="card p-3">
-              <h6>☁️ Weather Composition</h6>
+              <h6>Weather Composition</h6>
               <canvas id="pieChart"></canvas>
             </div>
           </div>
           <div class="col-md-6">
             <div class="card p-3">
-              <h6>🤖 Model Prediction Output</h6>
+              <h6>Model Prediction Output</h6>
               <canvas id="modelChart"></canvas>
             </div>
           </div>
@@ -220,17 +409,17 @@
   </div>
 
  <!-- Chatbot Bubble -->
-<div id="chatbotBubble" style="position: fixed; bottom: 90px; right: 20px; width: 420px; background: #1c1f2b; color: white; border-radius: 16px; display: none; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 1050; font-family: 'Inter', sans-serif;">
-  <div style="background: #10b981; padding: 14px 20px; border-top-left-radius: 16px; border-top-right-radius: 16px;">
-    <strong style="font-size: 16px;"><i class="fas fa-robot me-2"></i>EarthScape Bot</strong>
+<div id="chatbotBubble" style="position: fixed; bottom: 90px; right: 20px; width: 420px; background: rgba(26,26,26,0.96); color: white; border-radius: 16px; display: none; flex-direction: column; box-shadow: 0 18px 40px rgba(242,169,0,0.15); z-index: 1050; font-family: 'Inter', sans-serif; border: 1px solid rgba(242,169,0,0.24);">
+  <div class="chat-header" style="padding: 14px 20px; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+    <strong style="font-size: 16px;"><i class="fas fa-robot me-2" style="color: var(--gold);"></i>EarthScape Climate Agency Bot</strong>
   </div>
 
-  <div id="chatbotMessages" style="padding: 15px; max-height: 350px; overflow-y: auto; font-size: 14px; color: #d1d5db;">
-    <div style="color: #cbd5e1; margin-bottom: 10px;">👋 Hello! Please describe your issue.</div>
+  <div id="chatbotMessages" style="padding: 15px; max-height: 350px; overflow-y: auto; font-size: 14px; color: var(--silver);">
+    <div style="color: var(--silver); margin-bottom: 10px;">Hello! Please describe your issue.</div>
   </div>
 
-  <div style="padding: 12px; border-top: 1px solid #2e3440;">
-    <input type="text" id="chatInput" class="form-control form-control-sm" placeholder="Ask me anything about climate..." style="background-color: whitesmoke; border: none; border-radius: 8px; color: black; padding: 10px;" />
+  <div style="padding: 12px; border-top: 1px solid rgba(242,169,0,0.18);">
+    <input type="text" id="chatInput" class="form-control form-control-sm" placeholder="Ask me anything about climate..." style="background-color: rgba(255,255,255,0.96); border: none; border-radius: 8px; color: #0D0D0D; padding: 10px;" />
   </div>
 </div>
 
@@ -247,14 +436,14 @@
   $('#chatInput').on('keypress', function (e) {
     if (e.which === 13 && this.value.trim() !== '') {
       const msg = this.value.trim();
-      $('#chatbotMessages').append(`<div class="user-msg">🧑 You: ${msg}</div>`);
-      this.value = '';
+        $('#chatbotMessages').append(`<div class="user-msg">You: ${msg}</div>`);
+        this.value = '';
 
-      $.post("/chatbot", { message: msg }, function (data) {
-        $('#chatbotMessages').append(`<div class="bot-msg">🤖 Bot: ${data.reply}</div>`);
+        $.post("/chatbot", { message: msg }, function (data) {
+        $('#chatbotMessages').append(`<div class="bot-msg">Bot: ${data.reply}</div>`);
         $('#chatbotMessages').scrollTop($('#chatbotMessages')[0].scrollHeight);
       }).fail(function () {
-        $('#chatbotMessages').append(`<div class="bot-msg">❌ Could not connect.</div>`);
+        $('#chatbotMessages').append(`<div class="bot-msg">Could not connect.</div>`);
       });
     }
   });
@@ -316,10 +505,10 @@
 
         const options = {
           responsive: true,
-          plugins: { legend: { labels: { color: '#ddd' } } },
+          plugins: { legend: { labels: { color: '#FFFFFF' } } },
           scales: {
-            x: { ticks: { color: '#aaa' }, grid: { color: '#333' } },
-            y: { ticks: { color: '#aaa' }, grid: { color: '#333' } }
+            x: { ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } },
+            y: { ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } }
           }
         };
 
@@ -330,8 +519,8 @@
             datasets: [{
               label: 'Temperature (°C)',
               data: data.temperature,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16,185,129,0.2)',
+              borderColor: '#F2A900',
+              backgroundColor: 'rgba(242,169,0,0.18)',
               fill: true,
               tension: 0.4
             }]
@@ -344,9 +533,9 @@
           data: {
             labels,
             datasets: [
-              { label: 'Rainfall (mm)', data: data.rainfall, backgroundColor: '#3b82f6' },
-              { label: 'Humidity (%)', data: data.humidity, backgroundColor: '#f59e0b' },
-              { label: 'Wind Speed (km/h)', data: data.wind_speed, backgroundColor: '#ef4444' }
+              { label: 'Rainfall (mm)', data: data.rainfall, backgroundColor: '#F2A900' },
+              { label: 'Humidity (%)', data: data.humidity, backgroundColor: '#B0B0B0' },
+              { label: 'Wind Speed (km/h)', data: data.wind_speed, backgroundColor: '#FFC229' }
             ]
           },
           options
@@ -358,10 +547,10 @@
             labels: ['Rainfall', 'Humidity', 'Wind Speed'],
             datasets: [{
               data: [avg(data.rainfall), avg(data.humidity), avg(data.wind_speed)],
-              backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444']
+              backgroundColor: ['#F2A900', '#B0B0B0', '#FFC229']
             }]
           },
-          options: { plugins: { legend: { position: 'bottom', labels: { color: '#ddd' } } } }
+          options: { plugins: { legend: { position: 'bottom', labels: { color: '#FFFFFF' } } } }
         });
 
         fetch('/api/model-predictions')
@@ -374,7 +563,7 @@
                 datasets: [{
                   label: 'Predicted Humidity',
                   data: pred.humidity,
-                  backgroundColor: '#8b5cf6'
+                  backgroundColor: '#F2A900'
                 }]
               },
               options
@@ -391,7 +580,7 @@
       $.get(url, function (html) {
         $('.main-content-wrapper').html(html);
       }).fail(function () {
-        alert('❌ Page could not be loaded. Check route or network error.');
+        alert('Page could not be loaded. Check route or network error.');
       });
     });
   </script>

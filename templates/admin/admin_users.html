@@ -31,7 +31,7 @@
 
 <script>
 $(document).ready(function () {
-  // 🗑 Delete User
+  // Delete User
   $(document).off("click", ".delete-user").on("click", ".delete-user", function () {
     const id = $(this).data("id");
     if (confirm("Are you sure you want to delete this user?")) {
@@ -41,7 +41,7 @@ $(document).ready(function () {
     }
   });
 
-  // ✏️ Edit User
+  // Edit User
   $(document).off("click", ".edit-user").on("click", ".edit-user", function () {
     const row = $(this).closest("tr");
     const id = row.data("id");
@@ -50,7 +50,7 @@ $(document).ready(function () {
     const role = prompt("Role (admin/analyst):", row.find(".user-role").text().trim());
 
     if (!name || !email || !role) {
-      alert("⚠️ All fields are required.");
+      alert("All fields are required.");
       return;
     }
 

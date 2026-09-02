@@ -8,36 +8,45 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --black: #0D0D0D;
+      --black-2: #1A1A1A;
+      --gold: #F2A900;
+      --gold-hover: #FFC229;
+      --white: #FFFFFF;
+      --silver: #B0B0B0;
+      --dark-gray: #2B2B2B;
+    }
     body {
-      background-color: #1e1e2f;
-      color: #f0f0f0;
+      background: linear-gradient(180deg, var(--black) 0%, #121212 100%);
+      color: var(--white);
       font-family: 'Inter', sans-serif;
-      /* padding: 20px; */
     }
     .chart-container {
-      background-color: #2b2b3c;
-      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(42,42,42,0.98), rgba(26,26,26,0.98));
+      border: 1px solid rgba(242,169,0,0.14);
+      border-radius: 14px;
       padding: 20px;
       margin-bottom: 30px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 16px 26px rgba(242,169,0,0.08);
     }
     h2, h5 {
-      color: #10b981;
+      color: var(--gold);
     }
     .chart-description {
       font-size: 14px;
-      color: #94a3b8;
+      color: var(--silver);
     }
   </style>
 </head>
 <body>
   <div class="container-fluid">
-    <h2 class="mb-4">📊 Climate Data Visualization</h2>
+    <h2 class="mb-4">Climate Data Visualization</h2>
 
     <div class="row">
       <div class="col-md-6">
         <div class="chart-container">
-          <h5>🌡 Temperature Over Time</h5>
+          <h5>Temperature Over Time</h5>
           <p class="chart-description">This line chart shows how temperature changes over time, helping spot trends and climate shifts.</p>
           <canvas id="temperatureChart"></canvas>
         </div>
@@ -45,7 +54,7 @@
 
       <div class="col-md-6">
         <div class="chart-container">
-          <h5>📉 Humidity vs Temperature</h5>
+          <h5>Humidity vs Temperature</h5>
           <p class="chart-description">This scatter plot compares humidity with temperature to understand their relationship.</p>
           <canvas id="scatterChart"></canvas>
         </div>
@@ -53,7 +62,7 @@
 
       <div class="col-md-6">
         <div class="chart-container">
-          <h5>🌬 Wind Speed Distribution</h5>
+          <h5>Wind Speed Distribution</h5>
           <p class="chart-description">This bar chart highlights minimum, average, and maximum wind speeds observed.</p>
           <canvas id="windBoxChart"></canvas>
         </div>
@@ -61,7 +70,7 @@
 
       <div class="col-md-6">
         <div class="chart-container">
-          <h5>📦 Rainfall, Humidity, Wind</h5>
+          <h5>Rainfall, Humidity, Wind</h5>
           <p class="chart-description">This grouped bar chart shows combined trends of rainfall, humidity, and wind speed.</p>
           <canvas id="barComboChart"></canvas>
         </div>
@@ -86,18 +95,18 @@
             datasets: [{
               label: 'Temperature (°C)',
               data: temperature,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16,185,129,0.3)',
+              borderColor: '#F2A900',
+              backgroundColor: 'rgba(242,169,0,0.2)',
               fill: true,
               tension: 0.4
             }]
           },
           options: {
             responsive: true,
-            plugins: { legend: { labels: { color: '#ddd' } } },
+            plugins: { legend: { labels: { color: '#FFFFFF' } } },
             scales: {
-              x: { ticks: { color: '#ccc' }, grid: { color: '#333' } },
-              y: { ticks: { color: '#ccc' }, grid: { color: '#333' } }
+              x: { ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } },
+              y: { ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } }
             }
           }
         });
@@ -109,14 +118,14 @@
             datasets: [{
               label: 'Humidity vs Temp',
               data: scatterData,
-              backgroundColor: '#3b82f6'
+              backgroundColor: '#F2A900'
             }]
           },
           options: {
             responsive: true,
             scales: {
-              x: { title: { display: true, text: 'Temperature (°C)', color: '#ddd' }, ticks: { color: '#ccc' }, grid: { color: '#444' } },
-              y: { title: { display: true, text: 'Humidity (%)', color: '#ddd' }, ticks: { color: '#ccc' }, grid: { color: '#444' } }
+              x: { title: { display: true, text: 'Temperature (°C)', color: '#FFFFFF' }, ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } },
+              y: { title: { display: true, text: 'Humidity (%)', color: '#FFFFFF' }, ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } }
             }
           }
         });
@@ -126,17 +135,17 @@
           data: {
             labels: ['Wind Speed'],
             datasets: [
-              { label: 'Min', data: [Math.min(...wind)], backgroundColor: '#f87171' },
-              { label: 'Avg', data: [wind.reduce((a, b) => a + b, 0) / wind.length], backgroundColor: '#60a5fa' },
-              { label: 'Max', data: [Math.max(...wind)], backgroundColor: '#34d399' }
+              { label: 'Min', data: [Math.min(...wind)], backgroundColor: '#0D0D0D' },
+              { label: 'Avg', data: [wind.reduce((a, b) => a + b, 0) / wind.length], backgroundColor: '#B0B0B0' },
+              { label: 'Max', data: [Math.max(...wind)], backgroundColor: '#F2A900' }
             ]
           },
           options: {
             indexAxis: 'y',
-            plugins: { legend: { labels: { color: '#ccc' } } },
+            plugins: { legend: { labels: { color: '#FFFFFF' } } },
             scales: {
-              x: { ticks: { color: '#ccc' }, grid: { color: '#444' } },
-              y: { ticks: { color: '#ccc' }, grid: { color: '#444' } }
+              x: { ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } },
+              y: { ticks: { color: '#B0B0B0' }, grid: { color: 'rgba(242,169,0,0.15)' } }
             }
           }
         });
@@ -146,17 +155,17 @@
           data: {
             labels,
             datasets: [
-              { label: 'Rainfall', data: rainfall, backgroundColor: '#38bdf8' },
-              { label: 'Humidity', data: humidity, backgroundColor: '#facc15' },
-              { label: 'Wind Speed', data: wind, backgroundColor: '#f87171' }
+              { label: 'Rainfall', data: rainfall, backgroundColor: '#F2A900' },
+              { label: 'Humidity', data: humidity, backgroundColor: '#B0B0B0' },
+              { label: 'Wind Speed', data: wind, backgroundColor: '#0D0D0D' }
             ]
           },
           options: {
             responsive: true,
-            plugins: { legend: { labels: { color: '#ddd' } } },
+            plugins: { legend: { labels: { color: '#FFFFFF' } } },
             scales: {
-              x: { ticks: { color: '#ddd' }, grid: { color: '#333' } },
-              y: { ticks: { color: '#ddd' }, grid: { color: '#333' } }
+              x: { ticks: { color: '#FFFFFF' }, grid: { color: 'rgba(242,169,0,0.15)' } },
+              y: { ticks: { color: '#FFFFFF' }, grid: { color: 'rgba(242,169,0,0.15)' } }
             }
           }
         });

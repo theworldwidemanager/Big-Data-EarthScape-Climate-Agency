@@ -3,83 +3,434 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | EarthScape</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <title>Login | EarthScape Climate Agency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to bottom right, #1e1e2f, #2b2b3c);
-      color: #f0f0f0;
+    :root {
+      --black: #0D0D0D;
+      --black-2: #1A1A1A;
+      --gold: #F2A900;
+      --gold-hover: #FFC229;
+      --white: #FFFFFF;
+      --silver: #B0B0B0;
+      --dark-gray: #2B2B2B;
     }
-    .glass {
-      backdrop-filter: blur(20px);
-      background-color: rgba(43, 43, 60, 0.85);
-      border: 1px solid #4b5563;
-      border-radius: 1rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      animation: fadeIn 0.6s ease-in-out;
-    }
-    .alert { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; }
-    .alert-success { background-color: #14532d; color: #bbf7d0; }
-    .alert-danger { background-color: #7f1d1d; color: #fecaca; }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      background:
+        radial-gradient(circle at top left, rgba(242,169,0,0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(176,176,176,0.08), transparent 25%),
+        linear-gradient(135deg, var(--black) 0%, #121212 45%, var(--black-2) 100%);
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(242,169,0,0.02), transparent 30%, transparent 70%, rgba(242,169,0,0.02));
+      pointer-events: none;
+    }
+
+    .auth-shell {
+      position: relative;
+      width: min(1160px, 100%);
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      background: rgba(13, 13, 13, 0.82);
+      border: 1px solid rgba(242,169,0,0.22);
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 32px 70px rgba(242,169,0,0.12);
+      backdrop-filter: blur(12px);
+      isolation: isolate;
+    }
+
+    .brand-panel {
+      background:
+        linear-gradient(135deg, rgba(242,169,0,0.13), rgba(13,13,13,0.88) 40%, rgba(13,13,13,0.96)),
+        linear-gradient(180deg, rgba(176,176,176,0.02), rgba(242,169,0,0.02));
+      border-right: 1px solid rgba(242,169,0,0.18);
+      padding: 52px 46px 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .brand-panel::before {
+      content: "";
+      position: absolute;
+      inset: 24px 26px 24px 24px;
+      border: 1px solid rgba(242,169,0,0.1);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    .brand-panel::after {
+      content: "";
+      position: absolute;
+      left: 42px;
+      bottom: 32px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(242,169,0,0.12), transparent 70%);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: 66px;
+      height: auto;
+      filter: drop-shadow(0 12px 22px rgba(242,169,0,0.18));
+    }
+
+    .brand-name {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .brand-title {
+      margin: 0 0 14px;
+      font-size: clamp(2.5rem, 4vw, 4.2rem);
+      line-height: 0.96;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: var(--white);
+      max-width: 420px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-copy {
+      margin: 0 0 28px;
+      max-width: 440px;
+      color: var(--silver);
+      font-size: 1.06rem;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .metric-box {
+      padding: 16px 14px;
+      border-radius: 16px;
+      background: rgba(18,18,18,0.7);
+      border: 1px solid rgba(176,176,176,0.18);
+      box-shadow: inset 0 0 0 1px rgba(242,169,0,0.04);
+    }
+
+    .metric-box .kicker {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--silver);
+      margin-bottom: 8px;
+    }
+
+    .metric-box strong {
+      font-size: 1.3rem;
+      color: var(--white);
+      letter-spacing: -0.04em;
+    }
+
+    .auth-card {
+      padding: 44px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13,13,13,0.76);
+      position: relative;
+    }
+
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      inset: 20px 20px auto 20px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(242,169,0,0.7), transparent);
+    }
+
+    .form-wrap {
+      width: min(100%, 430px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .mini-brand {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .mini-brand img {
+      width: 52px;
+      height: auto;
+      filter: drop-shadow(0 12px 20px rgba(242,169,0,0.18));
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(242,169,0,0.1);
+      color: var(--gold);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 auto 14px;
+      display: block;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .form-title {
+      margin: 0 0 7px;
+      font-size: clamp(1.9rem, 2.3vw, 2.6rem);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      text-align: center;
+      color: var(--white);
+    }
+
+    .form-subtitle {
+      margin: 0 0 28px;
+      text-align: center;
+      color: var(--silver);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    .alert {
+      margin: 0 0 18px;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(242,169,0,0.2);
+      background: rgba(242,169,0,0.08);
+      color: var(--white);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+
+    .alert-danger {
+      border-left: 3px solid var(--gold);
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field-wrap {
+      display: grid;
+      gap: 8px;
+      position: relative;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--silver);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(176,176,176,0.42);
+      background: rgba(20,20,20,0.9);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 14px 15px;
+      font: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    input::placeholder { color: rgba(176,176,176,0.78); }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(242,169,0,0.95);
+      background: rgba(26,26,26,0.96);
+      box-shadow: 0 0 0 4px rgba(242,169,0,0.14);
+      transform: translateY(-1px);
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 42px;
+    }
+
+    .pw-toggle {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--silver);
+      cursor: pointer;
+      font-size: 1.05rem;
+      padding: 0;
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(180deg, var(--gold) 0%, var(--gold-hover) 100%);
+      color: var(--black);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      box-shadow: 0 16px 30px rgba(242,169,0,0.2);
+    }
+
+    .primary-btn:hover {
+      filter: brightness(1.02);
+      transform: translateY(-1px);
+    }
+
+    .meta-link {
+      display: block;
+      margin-top: 22px;
+      text-align: center;
+      color: var(--silver);
+      font-size: 0.94rem;
+    }
+
+    .meta-link a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .meta-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 820px) {
+      .auth-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-panel {
+        border-right: none;
+        border-bottom: 1px solid rgba(242,169,0,0.18);
+      }
+
+      .metric-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center px-4 py-10">
+<body>
+  <main class="auth-shell" aria-label="Login container">
+    <section class="brand-panel" aria-label="Brand introduction">
+      <div class="brand-header">
+        <img src="/static/logo.png" alt="EarthScape Climate Agency logo" class="brand-logo" />
+        <div class="brand-name">EarthScape Climate Agency</div>
+      </div>
+      <h1 class="brand-title">Secure access to climate intelligence.</h1>
+      <p class="brand-copy">Monitor risks, track forecasting models, and move faster with clean operational insight built for climate decision makers.</p>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl w-full rounded-lg overflow-hidden">
-
-    <!-- Left Panel -->
-    <div class="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-green-600 to-green-800 p-10">
-      <img src="/static/illustration.jpeg" alt="Climate Illustration" class="w-72 mb-6 drop-shadow-xl rounded-lg" />
-      <h2 class="text-3xl font-bold text-white text-center">🌍 Welcome to EarthScape</h2>
-      <p class="text-center text-white mt-2 max-w-sm">Monitor, predict & protect our planet using powerful insights.</p>
-    </div>
-
-    <!-- Right Panel (Login Form) -->
-    <div class="glass p-8 w-full">
-      <h2 class="text-2xl font-bold text-center text-green-400 mb-1">🔐 Login to Your Account</h2>
-      <p class="text-center text-gray-400 mb-6 text-sm">Access your EarthScape dashboard securely</p>
-
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-
-      <form method="POST" class="space-y-5">
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-          <input type="email" name="email" required
-            class="w-full px-4 py-2 bg-transparent border border-gray-600 text-white rounded-lg focus:ring-green-400 focus:border-green-400 transition" />
+      <div class="metric-row" aria-label="EarthScape Climate Agency capabilities">
+        <div class="metric-box">
+          <span class="kicker">Forecast</span>
+          <strong>24/7</strong>
         </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-          <input type="password" name="password" required
-            class="w-full px-4 py-2 bg-transparent border border-gray-600 text-white rounded-lg focus:ring-green-400 focus:border-green-400 transition" />
+        <div class="metric-box">
+          <span class="kicker">Signals</span>
+          <strong>Live</strong>
         </div>
+        <div class="metric-box">
+          <span class="kicker">Access</span>
+          <strong>Secure</strong>
+        </div>
+      </div>
+    </section>
 
-        <button type="submit"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg shadow-md transition duration-300">
-          Sign In
-        </button>
-      </form>
+    <section class="auth-card" aria-label="Login form section">
+      <div class="form-wrap">
+        <div class="mini-brand">
+          <img src="/static/logo.png" alt="EarthScape Climate Agency logo" />
+        </div>
+        <span class="eyebrow">Member login</span>
+        <h2 class="form-title">Welcome back</h2>
+        <p class="form-subtitle">Access your EarthScape Climate Agency dashboard securely.</p>
 
-      <p class="text-center text-sm text-gray-400 mt-4">
-        Don’t have an account?
-        <a href="/register" class="text-green-400 font-medium hover:underline">Register here</a>
-      </p>
-    </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-  </div>
+        <form method="POST" novalidate>
+          <div class="field-wrap">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" placeholder="you@example.com" required />
+          </div>
 
+          <div class="field-wrap">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" placeholder="Enter your password" required />
+          </div>
+
+          <button type="submit" class="primary-btn">Sign In</button>
+        </form>
+
+        <div class="meta-link">
+          Don’t have an account? <a href="/register">Register here</a>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

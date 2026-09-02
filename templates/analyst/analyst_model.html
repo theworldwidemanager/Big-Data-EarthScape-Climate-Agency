@@ -9,35 +9,45 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --black: #0D0D0D;
+      --black-2: #1A1A1A;
+      --gold: #F2A900;
+      --gold-hover: #FFC229;
+      --white: #FFFFFF;
+      --silver: #B0B0B0;
+      --dark-gray: #2B2B2B;
+    }
+
     body {
-      background-color: #0f172a;
-      color: #f8fafc;
+      background: linear-gradient(180deg, var(--black) 0%, #121212 100%);
+      color: var(--white);
       font-family: 'Inter', sans-serif;
-      /* padding: 30px; */
     }
 
     .card {
-      background-color: #1e293b;
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(180deg, rgba(42,42,42,0.98), rgba(26,26,26,0.98));
+      border: 1px solid rgba(242,169,0,0.14);
+      border-radius: 14px;
+      box-shadow: 0 14px 28px rgba(242,169,0,0.08);
     }
 
     .form-label,
     label {
       font-weight: 500;
-      color: #e2e8f0;
+      color: var(--silver);
     }
 
     .form-control,
     .form-select {
-      background-color: #0f172a;
-      color: #f1f5f9;
-      border: 1px solid #334155;
+      background: rgba(26,26,26,0.74);
+      color: var(--white);
+      border: 1px solid rgba(176,176,176,0.38);
+      border-radius: 10px;
     }
 
     .form-control::placeholder {
-      color: #94a3b8;
+      color: var(--silver);
     }
 
     .table th,
@@ -46,7 +56,7 @@
     }
 
     .toast {
-      color: white;
+      color: var(--white);
     }
 
     .btn-close {
@@ -54,8 +64,29 @@
     }
 
     canvas {
-      background-color: #1e293b;
+      background: rgba(26,26,26,0.9);
       border-radius: 8px;
+    }
+
+    .btn-success {
+      background: var(--gold) !important;
+      border: none !important;
+      color: #0D0D0D !important;
+    }
+
+    .alert-info,
+    .alert-danger,
+    .toast,
+    .toast .toast-body {
+      background: rgba(26, 26, 26, 0.96) !important;
+      border: 1px solid rgba(242, 169, 0, 0.2) !important;
+      color: var(--white) !important;
+    }
+
+    .text-info,
+    .text-danger,
+    .text-warning {
+      color: var(--gold) !important;
     }
   </style>
 </head>
@@ -67,7 +98,7 @@
     <form id="modelForm" onsubmit="return false;">
       <div class="row g-3">
         <div class="col-md-4">
-          <label class="form-label">🧠 Select Model</label>
+          <label class="form-label">Select Model</label>
           <select class="form-select" name="ml_model" id="ml_model" required>
             <option value="decision_tree">Decision Tree</option>
             <option value="linear_regression">Linear Regression</option>
@@ -78,7 +109,7 @@
         </div>
 
         <div class="col-md-4">
-          <label class="form-label">🔍 Predict Target</label>
+          <label class="form-label">Predict Target</label>
           <select class="form-select" id="target" name="target" required>
             <option value="humidity">Humidity</option>
             <option value="rainfall">Rainfall</option>
@@ -87,20 +118,20 @@
         </div>
 
         <div class="col-md-4">
-          <label class="form-label">🌬 Wind Speed (km/h)</label>
+          <label class="form-label">Wind Speed (km/h)</label>
           <input type="number" name="wind_speed_input" class="form-control" placeholder="Optional" />
         </div>
 
         <div class="col-md-3 form-field" id="tempField">
-          <label class="form-label">🌡 Temperature °C </label>
+          <label class="form-label">Temperature °C </label>
           <input type="number" name="temp_input" class="form-control" required />
         </div>
         <div class="col-md-3 form-field" id="humidityField">
-          <label class="form-label">💧 Humidity %</label>
+          <label class="form-label">Humidity %</label>
           <input type="number" name="humidity_input" class="form-control" />
         </div>
         <div class="col-md-3 form-field" id="rainfallField">
-          <label class="form-label">🌧 Rainfall mm</label>
+          <label class="form-label">Rainfall mm</label>
           <input type="number" name="rainfall_input" class="form-control" />
         </div>
 
@@ -111,7 +142,7 @@
     </form>
 
 
-    <!-- 🔄 Loader -->
+    <!-- Loader -->
     <div id="loader" class="text-center my-4" style="display: none;">
       <div class="spinner-border text-info" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -119,13 +150,13 @@
       <div class="mt-2 text-danger">Running prediction using selected model...</div>
     </div>
 
-    <!-- ✅ Result -->
+    <!-- Result -->
     <div id="predictionResult" class="mt-3"></div>
   </div>
 
   <div class="card p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="mb-0 text-light">📊 Prediction History</h5>
+      <h5 class="mb-0 text-light">Prediction History</h5>
       <button onclick="exportTableToCSV('predictionTableBody', 'predictions.csv')" class="btn btn-warning">
         <i class="fas fa-file-csv"></i> Export CSV
       </button>
@@ -138,7 +169,7 @@
           <th>Humidity</th>
           <th>Rainfall</th>
           <th>Wind Speed</th>
-          <th>🔮 Predicted Value</th>
+          <th>Predicted Value</th>
         </tr>
       </thead>
       <tbody id="predictionTableBody"></tbody>
@@ -146,7 +177,7 @@
   </div>
 
   <div class="card p-4 position-relative">
-    <h5 class="text-light mt-4">📊 Model Comparison</h5>
+    <h5 class="text-light mt-4">Model Comparison</h5>
 
   
       <!-- Compare Button -->
@@ -154,7 +185,7 @@
         <i class="fas fa-chart-bar"></i> Compare Models
       </button>
 
-      <!-- 🔽 Download Icon Button (Top-Right corner of canvas) -->
+      <!-- Download Icon Button (Top-Right corner of canvas) -->
       <button onclick="downloadCompareChart()" class="btn btn-outline-light btn-sm position-absolute"
         style="top: 10px; right: 10px; z-index: 2;" title="Download Chart Image">
         <i class="fas fa-download"></i>
@@ -170,7 +201,7 @@
       style="top: 10px; right: 10px; z-index: 2;" title="Download Chart Image">
       <i class="fas fa-download"></i>
     </button>
-    <h5 class="text-light">📈 Chart: Rainfall, Temp & Humidity</h5>
+    <h5 class="text-light">Chart: Rainfall, Temp & Humidity</h5>
     <canvas id="predictionChart" height="150"></canvas>
   </div>
 
@@ -194,7 +225,7 @@
       }).trigger('change');
 
       $('#modelForm').on('submit', function (e) {
-        e.preventDefault(); // ✅ prevent reload
+        e.preventDefault();
         $('#predictionResult').empty();
         $('#loader').show();
 
@@ -207,13 +238,13 @@
           if (response.success) {
             let html = `
           <div class="alert alert-success">
-            ✅ <strong>${modelName}</strong> predicted <strong>${response.target}</strong>: ${response.value}
+            <strong>${modelName}</strong> predicted <strong>${response.target}</strong>: ${response.value}
           </div>`;
 
             if (response.alerts && response.alerts.length > 0) {
               html += `
             <div class="alert alert-warning mt-2">
-              <strong>⚠ Climate Alerts:</strong>
+              <strong>Climate Alerts:</strong>
               <ul class="mb-0">` +
                       response.alerts.map(a => `<li>${a}</li>`).join('') +
                       `</ul>
@@ -231,15 +262,15 @@
             };
             addPredictionToHistory(data, response.target, response.value);
 
-            if (data.temperature > 40) showToast(`🔥 High temperature: ${data.temperature}`, 'danger');
-            if (data.humidity < 20) showToast(`💧 Low humidity: ${data.humidity}`, 'danger');
-            if (data.rainfall > 20) showToast(`☔️ Heavy rainfall: ${data.rainfall}`, 'danger');
+            if (data.temperature > 40) showToast(`High temperature: ${data.temperature}`, 'danger');
+            if (data.humidity < 20) showToast(`Low humidity: ${data.humidity}`, 'danger');
+            if (data.rainfall > 20) showToast(`Heavy rainfall: ${data.rainfall}`, 'danger');
           } else {
-            $('#predictionResult').html(`<div class="alert alert-danger">❌ ${response.error}</div>`);
+            $('#predictionResult').html(`<div class="alert alert-danger">${response.error}</div>`);
           }
         }).fail(() => {
           $('#loader').hide();
-          $('#predictionResult').html(`<div class="alert alert-danger">❌ Server error occurred.</div>`);
+          $('#predictionResult').html(`<div class="alert alert-danger">Server error occurred.</div>`);
         });
       });
     });
@@ -254,17 +285,17 @@
         datasets: [
           {
             label: "Temperature",
-            backgroundColor: "#f97316",
+            backgroundColor: "#F2A900",
             data: [],
           },
           {
             label: "Humidity",
-            backgroundColor: "#0ea5e9",
+            backgroundColor: "#B0B0B0",
             data: [],
           },
           {
             label: "Rainfall",
-            backgroundColor: "#22c55e",
+            backgroundColor: "#0D0D0D",
             data: [],
           },
         ],
@@ -374,12 +405,12 @@
     function addPredictionToHistory(data, predictedTarget, predictedValue) {
       const now = new Date().toLocaleString();
 
-      // ✅ Ensure values are numbers (or 0 if empty)
+      // Ensure values are numbers (or 0 if empty)
       const temperature = parseFloat(data.temperature) || 0;
       const humidity = parseFloat(data.humidity) || 0;
       const rainfall = parseFloat(data.rainfall) || 0;
 
-      // 🧾 Add to Table
+      // Add to Table
       const row = `
     <tr>
       <td>${now}</td>
@@ -391,13 +422,13 @@
     </tr>`;
       $('#predictionTableBody').prepend(row);
 
-      // 📊 Add to Chart
+      // Add to Chart
       predictionChart.data.labels.unshift(now.split(",")[1].trim());
       predictionChart.data.datasets[0].data.unshift(temperature);
       predictionChart.data.datasets[1].data.unshift(humidity);
       predictionChart.data.datasets[2].data.unshift(rainfall);
 
-      // ✅ Limit to last 10 entries (optional)
+      // Limit to last 10 entries (optional)
       if (predictionChart.data.labels.length > 10) {
         predictionChart.data.labels.pop();
         predictionChart.data.datasets.forEach(ds => ds.data.pop());
@@ -420,12 +451,12 @@ function compareModels() {
           {
             label: "RMSE",
             data: data.rmse,
-            backgroundColor: "#22c55e",
+            backgroundColor: "#B0B0B0",
           },
           {
             label: "MAE",
             data: data.mae,
-            backgroundColor: "#facc15",
+            backgroundColor: "#F2A900",
           }
         ]
       },

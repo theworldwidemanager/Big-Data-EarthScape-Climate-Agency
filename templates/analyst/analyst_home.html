@@ -3,34 +3,46 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Analyst Dashboard | EarthScape</title>
+  <title>Analyst Dashboard | EarthScape Climate Agency</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
+    :root {
+      --black: #0D0D0D;
+      --black-2: #1A1A1A;
+      --gold: #F2A900;
+      --gold-hover: #FFC229;
+      --white: #FFFFFF;
+      --silver: #B0B0B0;
+      --dark-gray: #2B2B2B;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #1e1e2f;
-      color: #f0f0f0;
+      background:
+        radial-gradient(circle at top left, rgba(242,169,0,0.12), transparent 22%),
+        linear-gradient(180deg, var(--black) 0%, #121212 100%);
+      color: var(--white);
       margin: 0;
       display: flex;
     }
 
-   
     .main {
-     margin-left: 90px;
+      margin-left: 90px;
       padding: 30px;
       width: 100%;
     }
 
     .card {
-      background: #2b2b3c;
-      border: none;
-      color: white;
-      border-left: 6px solid #10b981;
-      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(42,42,42,0.98), rgba(26,26,26,0.98));
+      border: 1px solid rgba(242,169,0,0.16);
+      color: var(--white);
+      border-left: 6px solid var(--gold);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(242,169,0,0.08);
     }
 
     .card h6 {
@@ -46,9 +58,9 @@
     }
 
     .user-msg {
-      background-color: #198754;
-      /* Bootstrap success */
-      color: white;
+      background: rgba(242,169,0,0.18);
+      border: 1px solid rgba(242,169,0,0.3);
+      color: var(--white);
       padding: 8px 12px;
       border-radius: 15px 15px 0 15px;
       margin: 6px 0;
@@ -59,8 +71,8 @@
     }
 
     .bot-msg {
-      background-color: #444;
-      color: white;
+      background: rgba(176,176,176,0.1);
+      color: var(--white);
       padding: 8px 12px;
       border-radius: 15px 15px 15px 0;
       margin: 6px 0;
@@ -73,6 +85,62 @@
     #chatbotMessages>div {
       display: flex;
       flex-direction: column;
+    }
+
+    .btn-success,
+    .btn-success:hover,
+    .btn-success:focus {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      color: #0D0D0D !important;
+      box-shadow: none !important;
+    }
+
+    .bg-success,
+    .toast.bg-success,
+    .badge.bg-success {
+      background: var(--gold) !important;
+      color: #0D0D0D !important;
+    }
+
+    .text-success,
+    .spinner-border.text-success {
+      color: var(--gold) !important;
+    }
+
+    .alert-success,
+    .alert-info,
+    .alert-warning {
+      background: rgba(242,169,0,0.12) !important;
+      border: 1px solid rgba(242,169,0,0.2) !important;
+      color: var(--white) !important;
+    }
+
+    .btn-info,
+    .btn-info:hover,
+    .btn-info:focus {
+      background: var(--gold) !important;
+      border-color: var(--gold) !important;
+      color: #0D0D0D !important;
+      box-shadow: none !important;
+    }
+
+    #chatbotBubble {
+      background: rgba(26,26,26,0.96);
+      border: 1px solid rgba(242,169,0,0.24);
+      box-shadow: 0 18px 40px rgba(242,169,0,0.15);
+    }
+
+    #chatbotBubble > div:first-child {
+      background: rgba(242,169,0,0.12);
+      color: var(--white);
+      border-bottom: 1px solid rgba(242,169,0,0.2);
+    }
+
+    #chatbotBtn {
+      background: var(--gold) !important;
+      border: none !important;
+      color: #0D0D0D !important;
     }
   </style>
 </head>
@@ -90,7 +158,7 @@
         <div class="d-flex align-items-center gap-3">
           <img src="{{ user.profile_img or '/static/default.jpg' }}" class="rounded-circle border" width="40"
             height="40" style="object-fit: cover;">
-          <h5 class="mb-0">👋 Welcome back, {{ user.username or 'Analyst' }}!</h5>
+          <h5 class="mb-0">Welcome back, {{ user.username or 'Analyst' }}!</h5>
         </div>
         <div class="text-end">
           <i class="fas fa-circle-user me-1"></i> {{ user.email }}
@@ -100,10 +168,11 @@
 
       <div id="datetime" class="text-white mb-3"></div>
      <div style="
-  padding: 20px;
-  background: linear-gradient(135deg, #e3f2fd, #ffffff);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(242,169,0,0.08), rgba(26,26,26,0.9));
+  border: 1px solid rgba(242,169,0,0.18);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(242,169,0,0.1);
   max-width: 100%;
   margin: 0 auto 20px auto;
   box-sizing: border-box;
@@ -111,17 +180,18 @@
 ">
   <h2 style="
     font-size: 1.8rem;
-    color: #2e7d32;
+    color: var(--white);
     margin-bottom: 10px;
+    letter-spacing: -0.03em;
   ">
-    👋 Welcome to <span style="color: #1b5e20;">EarthScape</span>
+    Welcome to <span style="color: var(--gold);">EarthScape Climate Agency</span>
   </h2>
   <p style="
-    font-size: 1.2rem;
-    color: #333;
-    line-height: 1.6;
+    font-size: 1.08rem;
+    color: var(--silver);
+    line-height: 1.7;
     margin: 0;
-    padding:1%
+    padding: 0;
   ">
     EarthScape Climate Agency is your smart platform for tracking and predicting climate data using real-time insights and machine learning. Here, you can easily forecast <strong>rainfall</strong>, <strong>temperature</strong>, or <strong>humidity</strong> by selecting your desired model and input values. The dashboard helps you stay informed with system tips, visualize trends, review climate alerts, and track your personal activity — including predictions made, visualizations created, and more — all in one responsive interface.
   </p>
@@ -129,7 +199,7 @@
 
 
       <div class="alert alert-info alert-dismissible fade show" role="alert">
-        🌦 Tip: Check for climate anomalies in the Alerts section.
+        Tip: Check for climate anomalies in the Alerts section.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
 
@@ -214,7 +284,7 @@
   <div class="toast-container">
     <div id="feedbackToast" class="toast align-items-center text-white bg-success border-0" role="alert">
       <div class="d-flex">
-        <div class="toast-body">✅ Feedback sent!</div>
+        <div class="toast-body">Feedback sent.</div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
@@ -224,12 +294,12 @@
   <!-- Chatbot Bubble -->
   <!-- Chatbot Bubble -->
   <div id="chatbotBubble"
-    style="position: fixed; bottom: 90px; right: 20px; width: 400px; background: #2b2b3c; color: white; border-radius: 15px; display: none; flex-direction: column; box-shadow: 0 0 15px rgba(0,0,0,0.3); z-index: 1050; overflow: hidden;">
+    style="position: fixed; bottom: 90px; right: 20px; width: 400px; background: rgba(26,26,26,0.96); color: white; border-radius: 15px; display: none; flex-direction: column; box-shadow: 0 0 15px rgba(242,169,0,0.18); z-index: 1050; overflow: hidden; border: 1px solid rgba(242,169,0,0.2);">
 
     <!-- Header with Title & Close Button -->
     <div
-      style="background: #10b981; padding: 10px 15px; border-top-left-radius: 15px; border-top-right-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
-      <strong><i class="fas fa-robot me-2"></i>EarthScape Bot</strong>
+      style="background: rgba(242,169,0,0.12); padding: 10px 15px; border-top-left-radius: 15px; border-top-right-radius: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(242,169,0,0.2);">
+      <strong><i class="fas fa-robot me-2" style="color: var(--gold);"></i>EarthScape Climate Agency Bot</strong>
       <button id="closeChatbot" class="btn btn-sm btn-light rounded-circle" title="Close" style="line-height: 0;">
         <i class="fas fa-times"></i>
       </button>
@@ -237,11 +307,11 @@
 
     <!-- Chat Area -->
     <div id="chatbotMessages" style="padding: 10px; max-height: 300px; overflow-y: auto; font-size: 14px;">
-      <div class="text-white">🌍 I’m your EarthScape assistant — how can I help you?</div>
+      <div class="text-white">I’m your EarthScape Climate Agency assistant — how can I help you?</div>
     </div>
 
     <!-- Input + Send -->
-    <div style="padding: 10px; border-top: 1px solid #444;">
+    <div style="padding: 10px; border-top: 1px solid rgba(242,169,0,0.2);">
       <div class="input-group">
         <input type="text" id="chatInput" class="form-control form-control-sm"
           placeholder="Ask anything about climate..." />
@@ -271,14 +341,14 @@
       const msg = $('#chatInput').val().trim();
       if (msg === '') return;
 
-      $('#chatbotMessages').append(`<div class="user-msg">🧑 You: ${msg}</div>`);
+      $('#chatbotMessages').append(`<div class="user-msg">You: ${msg}</div>`);
       $('#chatInput').val('');
 
       $.post("/chatbot", { message: msg }, function (data) {
-        $('#chatbotMessages').append(`<div class="bot-msg">🤖 Bot: ${data.reply}</div>`);
+        $('#chatbotMessages').append(`<div class="bot-msg">Bot: ${data.reply}</div>`);
         $('#chatbotMessages').scrollTop($('#chatbotMessages')[0].scrollHeight);
       }).fail(function () {
-        $('#chatbotMessages').append(`<div class="bot-msg">❌ Could not connect.</div>`);
+        $('#chatbotMessages').append(`<div class="bot-msg">Could not connect.</div>`);
       });
     }
 

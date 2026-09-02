@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 visualize_bp = Blueprint('visualize', __name__)
 
-# ✅ Mail setup (put in main file once globally)
+# Mail setup (put in main file once globally)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -45,7 +45,7 @@ try:
     feedback_collection = mongo.db.feedback
     climate_collection = mongo.db.climate_records
 except Exception as e:
-    print(f"⚠️ MongoDB Connection Trace: {e}")
+    print(f"MongoDB Connection Trace: {e}")
     # Fallback to avoid crashes on startup
     mongo = None
     users_collection = None
@@ -111,10 +111,10 @@ Reply with only one word: current or forecast.
                             temp = next_data["main"]["temp"]
                             desc = next_data["weather"][0]["description"].capitalize()
 
-                            reply = f"🌦️ {city_cleaned} ka forecast: Aane wale waqt mein temperature {temp}°C hoga, weather: {desc}."
+                            reply = f"{city_cleaned} ka forecast: Aane wale waqt mein temperature {temp}°C hoga, weather: {desc}."
                             return jsonify({ "reply": reply })
                         else:
-                            return jsonify({ "reply": f"⚠️ {city_cleaned} ka forecast data mil nahi saka." })
+                            return jsonify({ "reply": f"{city_cleaned} ka forecast data mil nahi saka." })
 
                     else:  # default to current
                         url = f"http://api.openweathermap.org/data/2.5/weather?q={city_cleaned}&appid={OPENWEATHER_API_KEY}&units=metric"
@@ -127,17 +127,17 @@ Reply with only one word: current or forecast.
                             desc = weather_data["weather"][0]["description"].capitalize()
                             humidity = weather_data["main"]["humidity"]
 
-                            reply = f"📍 {city_cleaned} mein temperature abhi {temp}°C hai, weather is: {desc}, aur humidity {humidity}% hai."
+                            reply = f"{city_cleaned} mein temperature abhi {temp}°C hai, weather is: {desc}, aur humidity {humidity}% hai."
                             return jsonify({ "reply": reply })
                         else:
-                            return jsonify({ "reply": f"⚠️ Sorry, {city_cleaned} ka weather data mil nahi saka." })
+                            return jsonify({ "reply": f"Sorry, {city_cleaned} ka weather data mil nahi saka." })
 
                 except requests.exceptions.RequestException as e:
-                    print("❌ Weather API error:", e)
-                    return jsonify({ "reply": "⚠️ Weather service is not responding at the moment. Try again later." })
+                    print("Weather API error:", e)
+                    return jsonify({ "reply": "Weather service is not responding at the moment. Try again later." })
 
             else:
-                return jsonify({ "reply": "⚠️ Please mention the city name so I can fetch the weather data." })
+                return jsonify({ "reply": "Please mention the city name so I can fetch the weather data." })
 
         # Step 4: Check if dashboard-related
         dashboard_check_prompt = f"""
@@ -158,47 +158,47 @@ Reply with only Yes or No.
 
         if is_dashboard_related:
             dashboard_prompt = f"""
-You are a smart and helpful chatbot for the EarthScape Climate Dashboard.
+You are a smart and helpful chatbot for the EarthScape Climate Agency Dashboard.
 
 The user will ask questions related to:
 
-🌦️ Climate Predictions:
+Climate Predictions:
 - Rainfall, humidity, or temperature prediction
 - Will it rain tomorrow?
 - What is the current humidity?
 
-📁 Data Upload:
+Data Upload:
 - Did my CSV upload?
 - Give summary of uploaded data
 - Are there missing values?
 - Train model on my uploaded file
 
-📊 Dashboard Help:
+Dashboard Help:
 - What does this dashboard show?
 - How to use the Visualize tab?
 - What are alerts?
 
-🧠 Machine Learning:
+Machine Learning:
 - Should I use classification or regression?
 - Which model should I choose? (Linear Regression, Decision Tree, etc.)
 - How accurate is my model?
 - Retrain the model
 
-🔔 Alerts:
+Alerts:
 - What do alerts mean?
 - Show recent climate alerts
 - How to review alerts?
 
-🧑‍💻 User Profile:
+User Profile:
 - How to update my profile?
 - Can I change my role?
 - How do I upload my profile picture?
 
-🔐 Account:
+Account:
 - How to logout?
 - How to reset my password?
 
-⚠️ Only respond to relevant questions. Keep replies **short**, **clear**, and **easy to understand**. Prefer **Roman Urdu** or **simple English** not Hindi.
+Only respond to relevant questions. Keep replies short, clear, and easy to understand. Prefer Roman Urdu or simple English, not Hindi.
 
 User: {user_msg}
 Bot:
@@ -208,12 +208,12 @@ Bot:
 
         # Step 5: Not related
         return jsonify({
-            "reply": "⚠️ Sorry, I can only help with climate or dashboard-related queries. Please ask something about weather, data upload, visualizations, alerts, or your profile."
+            "reply": "Sorry, I can only help with climate or dashboard-related queries. Please ask something about weather, data upload, visualizations, alerts, or your profile."
         })
 
     except Exception as e:
         print("Error:", e)
-        return jsonify({ "reply": "⚠️ Something went wrong. Please try again later." }), 500
+        return jsonify({ "reply": "Something went wrong. Please try again later." }), 500
     
 
     
@@ -224,7 +224,7 @@ def register():
         full_name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
-        role = "analyst"  # ✅ Force default role to Analyst
+        role = "analyst"  # Force default role to Analyst
 
         if not all([full_name, email, password]):
             flash('All fields are required!', 'danger')
@@ -326,7 +326,7 @@ def edit_user(id):
     return '', 204
 
 
-# ✅ Improved CSV Upload Route with Validation, Alerts, and Prediction Options
+# Improved CSV Upload Route with Validation, Alerts, and Prediction Options
 @app.route("/admin/upload", methods=["GET", "POST"])
 def upload_climate_records():
     if request.method == 'POST':
@@ -381,7 +381,7 @@ def upload_climate_records():
                         mongo.db.climate_records.insert_one(record)
                         inserted += 1
 
-                        # ✅ Create individual alerts for each condition
+                        # Create individual alerts for each condition
                         if temp > 40:
                             alerts.append({
                                 "type": "High Temperature",
@@ -411,7 +411,7 @@ def upload_climate_records():
                         errors.append(f"Row {i+2}: Invalid numeric values.")
                         skipped += 1
 
-                # ✅ Store all alerts
+                # Store all alerts
                 if alerts:
                     mongo.db.alerts.insert_many(alerts)
 
@@ -520,7 +520,7 @@ def upload_climate_records():
                     "skipped": skipped,
                     "errors": errors,
                     "alerts": alerts,
-                    "show_prediction": True  # ✅ frontend should show prediction UI
+                    "show_prediction": True  # frontend should show prediction UI
                 })
 
             except Exception as e:
@@ -572,7 +572,7 @@ def train_model_admin():
         df = pd.DataFrame(list(mongo.db.climate_records.find()))
         df = df[['temperature', 'humidity', 'rainfall', 'wind_speed']].dropna()
 
-        # ✅ Select features based on target
+        # Select features based on target
         if target == "humidity":
             features = ["temperature"]
         elif target == "rainfall":
@@ -584,7 +584,7 @@ def train_model_admin():
 
         df = df.dropna(subset=features + [target])
 
-        # ✅ Model selection
+        # Model selection
         if model_type == "decision_tree":
             model = DecisionTreeRegressor()
         elif model_type == "linear_regression":
@@ -600,7 +600,7 @@ def train_model_admin():
 
         model.fit(df[features], df[target])
 
-        # ✅ Input values
+        # Input values
         temp = float(request.form.get('temp_input', 0))
         humidity = request.form.get('humidity_input')
         rainfall = request.form.get('rainfall_input')
@@ -630,14 +630,14 @@ def train_model_admin():
 
         mongo.db.climate_records.insert_one(record)
 
-        # ✅ ALERT GENERATION
+        # ALERT GENERATION
         alert_messages = []
         if record.get("temperature") and record["temperature"] > 40:
-            alert_messages.append(f"🔥 High temperature: {record['temperature']}°C")
+            alert_messages.append(f" High temperature: {record['temperature']}°C")
         if record.get("humidity") and record["humidity"] < 20:
-            alert_messages.append(f"💧 Low humidity: {record['humidity']}%")
+            alert_messages.append(f" Low humidity: {record['humidity']}%")
         if record.get("rainfall") and record["rainfall"] > 20:
-            alert_messages.append(f"☔️ Heavy rainfall: {record['rainfall']} mm")
+            alert_messages.append(f" Heavy rainfall: {record['rainfall']} mm")
 
         if alert_messages:
             mongo.db.climate_alerts.insert_one({
@@ -647,11 +647,11 @@ def train_model_admin():
                 "username": session.get('username', 'unknown')
             })
 
-            # ✅ Send alert email
+            # Send alert email
             user = mongo.db.users.find_one({'username': session.get('username')})
             if user and 'email' in user:
                 try:
-                    subject_line = "📢 EarthScape Climate Agency - Climate Alert Notification"
+                    subject_line = " EarthScape Climate Agency - Climate Alert Notification"
                     message_body = f"""
 Dear {user['username']},
 
@@ -666,7 +666,7 @@ Please take necessary precautions if you're in the affected area.
 Stay safe and thank you for using EarthScape Climate Agency.
 
 Best regards,  
-🌿 EarthScape Climate Team
+ EarthScape Climate Agency Team
 """
 
                     msg = Message(
@@ -677,7 +677,7 @@ Best regards,
                     )
                     mail.send(msg)
 
-                    # ✅ Log email activity
+                    # Log email activity
                     mongo.db.activities.insert_one({
                         "username": user['username'],
                         "action": f"Alert email sent to {user['email']}",
@@ -685,9 +685,9 @@ Best regards,
                     })
 
                 except Exception as e:
-                    print(f"❌ Email failed: {e}")
+                    print(f" Email failed: {e}")
 
-        # ✅ Format prediction display
+        # Format prediction display
         if target == "temperature":
             display_value = f"{prediction}°C"
         elif target == "humidity":
@@ -697,14 +697,14 @@ Best regards,
         else:
             display_value = str(prediction)
 
-        # ✅ Log model training
+        # Log model training
         mongo.db.activities.insert_one({
             "username": session.get('username', 'unknown'),
             "action": f"Trained {model_type.replace('_', ' ').title()} model on {target.capitalize()}",
             "timestamp": datetime.datetime.utcnow()
         })
 
-        # ✅ Save prediction
+        # Save prediction
         mongo.db.prediction_history.insert_one({
             "username": session.get("username", "unknown"),
             "timestamp": datetime.datetime.utcnow(),
@@ -793,7 +793,7 @@ from flask import request, jsonify
 # --- DELETE FEEDBACK ---
 @app.route('/admin/feedback/delete/<id>', methods=['POST'])
 def delete_feedback(id):
-    print("Deleting feedback ID:", id)  # ✅ Removed emoji to avoid Unicode error
+    print("Deleting feedback ID:", id)
     try:
         mongo.db.feedback.delete_one({'_id': ObjectId(id)})
         return '', 204
@@ -848,8 +848,8 @@ def update_admin_profile():
 
 @app.route('/logout')
 def logout():
-    session.clear()  # ✅ Clear all session data
-    return redirect(url_for('login'))  # ✅ Redirect to login page
+    session.clear()
+    return redirect(url_for('login'))
 
 
 
@@ -869,7 +869,7 @@ def analyst_dashboard():
     total_alerts = mongo.db.climate_alerts.count_documents({})
     predictions_count = mongo.db.climate_records.count_documents({'source': 'Model + Manual'})
 
-    # ✅ Fetch recent activity
+    # Fetch recent activity
     username = session.get('username', 'unknown')
     recent_activities = list(mongo.db.activities.find(
         {"username": username}
@@ -894,7 +894,7 @@ def analyst_dashboard_home():
     total_alerts = mongo.db.climate_alerts.count_documents({})
     predictions_count = mongo.db.climate_records.count_documents({'source': 'Model + Manual'})
 
-    # ✅ Fetch recent activities
+    # Fetch recent activities
     username = session.get('username', 'unknown')
     recent_activities = list(mongo.db.activities.find(
         {"username": username}
@@ -942,7 +942,7 @@ def update_analyst_profile():
     mongo.db.users.update_one({'_id': ObjectId(user_id)}, {'$set': updated_data})
     return jsonify({'status': 'success'})
 
-# ✅ Improved CSV Upload Route with Validation, Alerts, and Prediction Options
+# Improved CSV Upload Route with Validation, Alerts, and Prediction Options
 @app.route("/analyst/upload", methods=["GET", "POST"])
 def upload_climate_records_analyst():
     if request.method == 'POST':
@@ -997,7 +997,7 @@ def upload_climate_records_analyst():
                         mongo.db.climate_records.insert_one(record)
                         inserted += 1
 
-                        # ✅ Create individual alerts for each condition
+                        # Create individual alerts for each condition
                         if temp > 40:
                             alerts.append({
                                 "type": "High Temperature",
@@ -1027,11 +1027,11 @@ def upload_climate_records_analyst():
                         errors.append(f"Row {i+2}: Invalid numeric values.")
                         skipped += 1
 
-                # ✅ Store all alerts
+                # Store all alerts
                 if alerts:
                     mongo.db.alerts.insert_many(alerts)
 
-                # ✅ Log CSV upload
+                # Log CSV upload
                 mongo.db.activities.insert_one({
                     "username": session.get('username', 'unknown'),
                     "action": f"Uploaded CSV: {inserted} records inserted, {skipped} skipped",
@@ -1075,7 +1075,7 @@ def train_model_analyst():
         df = pd.DataFrame(list(mongo.db.climate_records.find()))
         df = df[['temperature', 'humidity', 'rainfall', 'wind_speed']].dropna()
 
-        # ✅ Select features based on target
+        # Select features based on target
         if target == "humidity":
             features = ["temperature"]
         elif target == "rainfall":
@@ -1087,7 +1087,7 @@ def train_model_analyst():
 
         df = df.dropna(subset=features + [target])
 
-        # ✅ Model selection
+        # Model selection
         if model_type == "decision_tree":
             model = DecisionTreeRegressor()
         elif model_type == "linear_regression":
@@ -1103,7 +1103,7 @@ def train_model_analyst():
 
         model.fit(df[features], df[target])
 
-        # ✅ Input values
+        # Input values
         temp = float(request.form.get('temp_input', 0))
         humidity = request.form.get('humidity_input')
         rainfall = request.form.get('rainfall_input')
@@ -1133,14 +1133,14 @@ def train_model_analyst():
 
         mongo.db.climate_records.insert_one(record)
 
-        # ✅ ALERT GENERATION
+        # ALERT GENERATION
         alert_messages = []
         if record.get("temperature") and record["temperature"] > 40:
-            alert_messages.append(f"🔥 High temperature: {record['temperature']}°C")
+            alert_messages.append(f" High temperature: {record['temperature']}°C")
         if record.get("humidity") and record["humidity"] < 20:
-            alert_messages.append(f"💧 Low humidity: {record['humidity']}%")
+            alert_messages.append(f" Low humidity: {record['humidity']}%")
         if record.get("rainfall") and record["rainfall"] > 20:
-            alert_messages.append(f"☔️ Heavy rainfall: {record['rainfall']} mm")
+            alert_messages.append(f" Heavy rainfall: {record['rainfall']} mm")
 
         if alert_messages:
             mongo.db.climate_alerts.insert_one({
@@ -1150,11 +1150,11 @@ def train_model_analyst():
                 "username": session.get('username', 'unknown')
             })
 
-            # ✅ Send alert email
+            # Send alert email
             user = mongo.db.users.find_one({'username': session.get('username')})
             if user and 'email' in user:
                 try:
-                    subject_line = "📢 EarthScape Climate Agency - Climate Alert Notification"
+                    subject_line = " EarthScape Climate Agency - Climate Alert Notification"
                     message_body = f"""
 Dear {user['username']},
 
@@ -1169,7 +1169,7 @@ Please take necessary precautions if you're in the affected area.
 Stay safe and thank you for using EarthScape Climate Agency.
 
 Best regards,  
-🌿 EarthScape Climate Team
+ EarthScape Climate Agency Team
 """
 
                     msg = Message(
@@ -1180,7 +1180,7 @@ Best regards,
                     )
                     mail.send(msg)
 
-                    # ✅ Log email activity
+                    # Log email activity
                     mongo.db.activities.insert_one({
                         "username": user['username'],
                         "action": f"Alert email sent to {user['email']}",
@@ -1188,9 +1188,9 @@ Best regards,
                     })
 
                 except Exception as e:
-                    print(f"❌ Email failed: {e}")
+                    print(f" Email failed: {e}")
 
-        # ✅ Format prediction display
+        # Format prediction display
         if target == "temperature":
             display_value = f"{prediction}°C"
         elif target == "humidity":
@@ -1200,14 +1200,14 @@ Best regards,
         else:
             display_value = str(prediction)
 
-        # ✅ Log model training
+        # Log model training
         mongo.db.activities.insert_one({
             "username": session.get('username', 'unknown'),
             "action": f"Trained {model_type.replace('_', ' ').title()} model on {target.capitalize()}",
             "timestamp": datetime.datetime.utcnow()
         })
 
-        # ✅ Save prediction
+        # Save prediction
         mongo.db.prediction_history.insert_one({
             "username": session.get("username", "unknown"),
             "timestamp": datetime.datetime.utcnow(),
@@ -1297,7 +1297,7 @@ def submit_feedback_ajax():
         'message': message,
         'timestamp': datetime.datetime.now()
     })
-    # ✅ Log feedback
+    # Log feedback
     mongo.db.activities.insert_one({
         "username": username,
         "action": "Submitted feedback",
